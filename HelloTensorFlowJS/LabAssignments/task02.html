@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Task 2 - Vector Operations</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+</head>
+<body>
+
+<script>
+    const a = tf.tensor([1, 2, 3]);
+    const b = tf.tensor([4, 5, 6]);
+
+    // Addition
+    const sum = tf.add(a, b);
+    console.log("Addition Result:");
+    sum.print();
+
+    // Multiplication
+    const product = tf.mul(a, b);
+    console.log("Multiplication Result:");
+    product.print();
+</script>
+
+</body>
+</html>
