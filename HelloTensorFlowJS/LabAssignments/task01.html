@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Task 1 - Tensor Creation</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+</head>
+<body>
+
+<script>
+    // Scalar (0-D)
+    const scalar = tf.scalar(5);
+    console.log("Scalar:");
+    scalar.print();
+
+    // Vector (1-D)
+    const vector = tf.tensor([1, 2, 3]);
+    console.log("Vector:");
+    vector.print();
+
+    // Matrix (2-D)
+    const matrix = tf.tensor([[1, 2], [3, 4]]);
+    console.log("Matrix:");
+    matrix.print();
+</script>
+
+</body>
+</html>
