@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Task 3 - Reshape and Flatten</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+</head>
+<body>
+
+<script>
+    const tensor = tf.tensor([1, 2, 3, 4]);
+
+    console.log("Original Tensor:");
+    tensor.print();
+
+    // Reshape
+    const reshaped = tensor.reshape([2, 2]);
+    console.log("Reshaped Tensor:");
+    reshaped.print();
+
+    // Flatten
+    const flattened = reshaped.flatten();
+    console.log("Flattened Tensor:");
+    flattened.print();
+</script>
+
+</body>
+</html>
