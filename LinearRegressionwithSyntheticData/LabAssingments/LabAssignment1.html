@@ -1,58 +1,126 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Console Controlled Regression</title>
+  <meta charset="UTF-8">
+  <title>Linear Regression (TensorFlow.js)</title>
+
+  <!-- TensorFlow.js CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    canvas {
+      max-width: 900px;
+    }
+    .info {
+      margin-top: 15px;
+      padding: 10px;
+      background: #f2f2f2;
+      width: 400px;
+    }
+  </style>
 </head>
 <body>
-  <h3>Lab 1: Actual vs Predicted (Console Controlled)</h3>
-  <canvas id="graph" width="500" height="400"></canvas>
 
-  <script>
-    let model;
-    let xsTensor, ysTensor;
+<h2>Linear Regression (TensorFlow.js)</h2>
+<p><b>Open console and type:</b> <code>addPoint(x, y)</code></p>
 
-    function createModel() {
-      model = tf.sequential();
-      model.add(tf.layers.dense({ units: 1, inputShape: [1] }));
-      model.compile({
-        optimizer: tf.train.sgd(0.01),
-        loss: 'meanSquaredError'
-      });
+<canvas id="chart"></canvas>
+
+<div class="info">
+  <p><b>Equation:</b> <span id="eq">-</span></p>
+  <p><b>MSE:</b> <span id="mse">-</span></p>
+  <p><b>Points:</b> <span id="count">0</span></p>
+</div>
+
+<script>
+  let xData = [];
+  let yData = [];
+  let model;
+  let chart;
+
+  // Create chart
+  const ctx = document.getElementById("chart").getContext("2d");
+  chart = new Chart(ctx, {
+    type: "scatter",
+    data: {
+      datasets: [
+        {
+          label: "Actual Data",
+          data: [],
+          backgroundColor: "blue"
+        },
+        {
+          label: "Predicted Line",
+          type: "line",
+          data: [],
+          borderColor: "red",
+          fill: false
+        }
+      ]
+    },
+    options: {
+      scales: {
+        x: { type: "linear", position: "bottom" }
+      }
     }
+  });
 
-    async function trainAndPlot(xs, ys) {
-      xsTensor = tf.tensor1d(xs);
-      ysTensor = tf.tensor1d(ys);
+  // Create model
+  function createModel() {
+    model = tf.sequential();
+    model.add(tf.layers.dense({ units: 1, inputShape: [1] }));
+    model.compile({
+      optimizer: tf.train.sgd(0.01),
+      loss: "meanSquaredError"
+    });
+  }
 
-      createModel();
-      await model.fit(xsTensor, ysTensor, { epochs: 200 });
+  createModel();
 
-      const preds = model.predict(xsTensor);
-      plot(xs, ys, preds.arraySync());
-    }
+  // Add point from console
+  async function addPoint(x, y) {
+    xData.push(x);
+    yData.push(y);
 
-    function plot(x, actual, predicted) {
-      const ctx = document.getElementById("graph").getContext("2d");
-      ctx.clearRect(0, 0, 500, 400);
+    document.getElementById("count").innerText = xData.length;
 
-      actual.forEach((y, i) => {
-        ctx.fillStyle = "blue";
-        ctx.fillRect(x[i]*60, 400-y*30, 6, 6);
-      });
+    if (xData.length < 2) return;
 
-      predicted.forEach((y, i) => {
-        ctx.fillStyle = "red";
-        ctx.fillRect(x[i]*60, 400-y[0]*30, 6, 6);
-      });
-    }
+    const xs = tf.tensor2d(xData, [xData.length, 1]);
+    const ys = tf.tensor2d(yData, [yData.length, 1]);
 
-    // 👉 CALL THIS FROM CONSOLE
-    function updateData(xs, ys) {
-      trainAndPlot(xs, ys);
-    }
+    await model.fit(xs, ys, { epochs: 200 });
 
-    console.log("Use: updateData([1,2,3], [2,4,6])");
-  </script>
+    const preds = model.predict(xs);
+    const predValues = await preds.array();
+
+    // Update chart
+    chart.data.datasets[0].data = xData.map((x, i) => ({ x, y: yData[i] }));
+    chart.data.datasets[1].data = xData.map((x, i) => ({ x, y: predValues[i][0] }));
+    chart.update();
+
+    // Equation
+    const weights = model.getWeights();
+    const m = (await weights[0].array())[0][0];
+    const b = (await weights[1].array())[0];
+    document.getElementById("eq").innerText = `y = ${m.toFixed(2)}x + ${b.toFixed(2)}`;
+
+    // MSE
+    const mse = tf.losses.meanSquaredError(ys, preds);
+    document.getElementById("mse").innerText = (await mse.data())[0].toFixed(4);
+
+    console.log(`Point added: (${x}, ${y})`);
+  }
+
+  console.log("Use: addPoint(x, y)");
+</script>
+
 </body>
 </html>
