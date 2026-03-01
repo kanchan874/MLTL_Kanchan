@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>AI Sentiment Analyzer</title>
+
+  <!-- TensorFlow.js -->
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.10.0"></script>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    body {
+      font-family: Arial;
+      background: linear-gradient(135deg,#667eea,#764ba2);
+      color: white;
+      text-align: center;
+      padding: 40px;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.1);
+      padding: 30px;
+      border-radius: 15px;
+      width: 800px;
+      margin: auto;
+    }
+
+    input {
+      width: 80%;
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+      font-size: 16px;
+    }
+
+    button {
+      margin-top: 15px;
+      padding: 10px 25px;
+      border: none;
+      border-radius: 8px;
+      background: orange;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    canvas {
+      margin-top: 30px;
+      background: white;
+      border-radius: 10px;
+    }
+
+    #result {
+      margin-top: 20px;
+      font-size: 20px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="card">
+  <h1>AI Sentiment Analyzer</h1>
+  <p>Live Prediction Probability Graph (RNN vs Dense)</p>
+
+  <input id="sentence" value="This movie is amazing">
+  <br>
+  <button onclick="predict()">Analyze</button>
+
+  <div id="result"></div>
+
+  <canvas id="predictionChart" width="600" height="300"></canvas>
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
