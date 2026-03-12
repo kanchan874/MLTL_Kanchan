@@ -1,12 +1,172 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>My First HTML Page</title>
+<meta charset="UTF-8">
+<title>TensorFlow.js Tensor Calculator</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.16.0/dist/tf.min.js"></script>
+
+<style>
+
+body{
+font-family: Arial;
+background:linear-gradient(135deg,#4facfe,#00f2fe);
+text-align:center;
+padding:30px;
+}
+
+.container{
+background:white;
+padding:25px;
+border-radius:10px;
+width:500px;
+margin:auto;
+box-shadow:0 5px 15px rgba(0,0,0,0.3);
+}
+
+input{
+padding:10px;
+width:80%;
+margin:10px;
+border-radius:5px;
+border:1px solid #ccc;
+}
+
+button{
+padding:10px 20px;
+margin:10px;
+border:none;
+background:#007BFF;
+color:white;
+border-radius:5px;
+cursor:pointer;
+}
+
+button:hover{
+background:#0056b3;
+}
+
+pre{
+background:#111;
+color:#00ff9d;
+padding:15px;
+border-radius:5px;
+text-align:left;
+}
+
+</style>
 </head>
+
 <body>
 
-    <h1>Welcome to HTML</h1>
-    <p>This is a basic HTML page.</p>
+<h1>TensorFlow.js Tensor Calculator</h1>
+
+<div class="container">
+
+<h3>Vector Operations</h3>
+
+<input id="vector1" placeholder="Enter Vector 1 (example: 1,2,3)">
+<br>
+
+<input id="vector2" placeholder="Enter Vector 2 (example: 4,5,6)">
+<br>
+
+<button onclick="addVectors()">Addition</button>
+<button onclick="multiplyVectors()">Multiplication</button>
+
+<h3>Matrix Operations</h3>
+
+<input id="matrix" placeholder="Matrix values (example: 1,2,3,4,5,6)">
+<br>
+
+<button onclick="reshapeMatrix()">Reshape 3x2</button>
+<button onclick="flattenMatrix()">Flatten</button>
+
+<h3>Output</h3>
+
+<pre id="output"></pre>
+
+</div>
+
+<script>
+
+function getVector(inputId){
+return document.getElementById(inputId).value
+.split(",")
+.map(Number)
+}
+
+function showResult(result){
+
+result.print()
+
+let text = result.toString()
+
+console.log("Result:", text)
+
+document.getElementById("output").innerText = text
+
+}
+
+
+// Vector Addition
+function addVectors(){
+
+let v1 = tf.tensor1d(getVector("vector1"))
+let v2 = tf.tensor1d(getVector("vector2"))
+
+let result = v1.add(v2)
+
+console.log("Vector Addition")
+showResult(result)
+
+}
+
+
+// Vector Multiplication
+function multiplyVectors(){
+
+let v1 = tf.tensor1d(getVector("vector1"))
+let v2 = tf.tensor1d(getVector("vector2"))
+
+let result = v1.mul(v2)
+
+console.log("Vector Multiplication")
+showResult(result)
+
+}
+
+
+// Reshape
+function reshapeMatrix(){
+
+let values = getVector("matrix")
+
+let tensor = tf.tensor2d(values,[2,3])
+
+let result = tensor.reshape([3,2])
+
+console.log("Reshape Operation")
+showResult(result)
+
+}
+
+
+// Flatten
+function flattenMatrix(){
+
+let values = getVector("matrix")
+
+let tensor = tf.tensor2d(values,[2,3])
+
+let result = tensor.flatten()
+
+console.log("Flatten Operation")
+showResult(result)
+
+}
+
+</script>
 
 </body>
 </html>
