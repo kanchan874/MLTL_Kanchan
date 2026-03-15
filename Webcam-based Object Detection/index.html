@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webcam-based Object Detection using MobileNet (TensorFlow.js)</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Load TensorFlow.js core from CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    
+    <!-- Include MobileNet specific backend as requested -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet"></script>
+    
+    <!-- Load COCO-SSD object detection (which uses MobileNet structure) to support Bounding Boxes -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
+    
+    <!-- Google Fonts for professional UI appearance -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Professional Student Practical Interface Header -->
+        <header class="header">
+            <h1>Webcam-based Object Detection using MobileNet (TensorFlow.js)</h1>
+            <div class="student-info">
+                <span class="info-item">Name: <strong>Kanchan Gaikwad</strong></span>
+                <span class="info-item">USN NO.: <strong>CM23004</strong></span>
+            </div>
+        </header>
+        
+        <main class="main-content">
+            <!-- Center webcam video section -->
+            <div class="video-section">
+                <div class="video-container">
+                    <!-- The webcam feed -->
+                    <video id="webcam" autoplay playsinline muted></video>
+                    
+                    <!-- HTML Canvas overlay for drawing the bounding boxes -->
+                    <canvas id="overlay"></canvas>
+                    
+                    <!-- Real-time FPS counter display -->
+                    <div id="fps-counter" class="fps-counter">FPS: 0</div>
+                    
+                    <!-- Loading screen while downloading the TensorFlow model -->
+                    <div id="loading-overlay" class="loading-overlay">
+                        <div class="spinner"></div>
+                        <p>Loading MobileNet Detection Model...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel to display the top 3 predictions with dynamic scores -->
+            <div class="results-section">
+                <h2>Top 3 Predictions</h2>
+                <div id="predictions" class="predictions">
+                    <p class="waiting-text">Waiting for webcam stream...</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Main JavaScript Logic -->
+    <script src="script.js"></script>
+</body>
+</html>
