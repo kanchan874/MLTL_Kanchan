@@ -1,0 +1,173 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f8fafc;
+    color: #333;
+}
+
+header {
+    background: #4f46e5;
+    color: white;
+    padding: 25px;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+header h1 {
+    margin: 0 0 10px 0;
+    font-size: 1.8em;
+}
+
+.student-info p {
+    margin: 5px 0;
+    font-size: 1.1em;
+    color: #e0e7ff;
+}
+
+.intro-description {
+    text-align: center;
+    font-size: 16px;
+    color: #475569;
+    margin-bottom: 30px;
+}
+
+.container {
+    max-width: 800px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+.section {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    margin-bottom: 25px;
+    border-left: 6px solid #4f46e5;
+}
+
+h2 {
+    margin-top: 0;
+    color: #0f172a;
+    font-size: 1.4em;
+    border-bottom: 2px solid #f1f5f9;
+    padding-bottom: 10px;
+}
+
+.control-group {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-top: 15px;
+    flex-wrap: wrap;
+}
+
+.upload-group {
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.file-label {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 450px;
+    align-items: center;
+    background: #f8fafc;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #e2e8f0;
+}
+
+.btn {
+    background: #6366f1;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(99, 102, 241, 0.3);
+}
+
+.btn:hover {
+    background: #4f46e5;
+    box-shadow: 0 4px 6px rgba(99, 102, 241, 0.4);
+    transform: translateY(-1px);
+}
+
+.btn:disabled {
+    background: #cbd5e1;
+    color: #64748b;
+    box-shadow: none;
+    cursor: not-allowed;
+    transform: none;
+}
+
+input[type="number"] {
+    padding: 12px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 16px;
+    width: 150px;
+    transition: border-color 0.3s;
+}
+
+input[type="number"]:focus {
+    outline: none;
+    border-color: #6366f1;
+}
+
+.status-msg {
+    padding: 12px 15px;
+    border-radius: 8px;
+    background: #fee2e2;
+    color: #b91c1c;
+    font-weight: 600;
+    margin-top: 15px;
+    display: none;
+    border-left: 4px solid #ef4444;
+}
+
+.success-msg {
+    background: #dcfce7 !important;
+    color: #15803d !important;
+    border-left-color: #22c55e !important;
+}
+
+.info-text {
+    font-size: 16px;
+    color: #334155;
+    background: #f1f5f9;
+    padding: 10px 15px;
+    border-radius: 6px;
+}
+
+.prediction-box {
+    margin-top: 20px;
+    font-size: 20px;
+    color: #475569;
+    background: #f8fafc;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px dashed #cbd5e1;
+    text-align: center;
+}
+
+.result-box {
+    font-size: 36px;
+    font-weight: 800;
+    display: block;
+    margin-top: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.helper-text {
+    font-size: 14px;
+    color: #64748b;
+    margin-bottom: 10px;
+}

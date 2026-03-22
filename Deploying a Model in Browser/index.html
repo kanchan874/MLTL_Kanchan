@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Pass/Fail Predictor</title>
+    <!-- Include TensorFlow.js via CDN explicitly -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <header>
+        <h1>Student Pass/Fail Predictor using TensorFlow.js</h1>
+        <div class="student-info">
+            <p><strong>Name:</strong> Kanchan Gaikwad</p>
+            <p><strong>USN NO.:</strong> CM23004</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <p class="intro-description">
+            This project predicts whether a student will <b>PASS</b> or <b>FAIL</b> based on their study hours using a
+            machine learning model executed entirely in your browser.
+        </p>
+
+        <!-- PART 1: Model Training -->
+        <div class="section">
+            <h2>1. Model Training</h2>
+            <p class="helper-text">Dataset mapping Study Hours (1-4 = Fail, 5-8 = Pass).</p>
+            <div class="control-group">
+                <button id="train-btn" class="btn">Train Model</button>
+                <span class="info-text">Training Loss: <strong id="train-loss-val">N/A</strong></span>
+            </div>
+            <div id="train-status" class="status-msg"></div>
+        </div>
+
+        <!-- PART 2: Predictions -->
+        <div class="section" id="prediction-section">
+            <h2>2. Predict Output</h2>
+            <div class="control-group">
+                <input type="number" id="predict-input" placeholder="Enter study hours (e.g., 2 or 7)" value="7" min="0"
+                    step="0.5">
+                <button id="predict-btn" class="btn" disabled>Predict Result</button>
+            </div>
+            <div class="prediction-box">
+                Model Prediction: <span class="result-box" id="predict-result">--</span>
+            </div>
+        </div>
+
+        <!-- PART 3 & 4: LocalStorage Save / Load -->
+        <div class="section">
+            <h2>3. Browser LocalStorage</h2>
+            <div class="control-group">
+                <button id="save-ls-btn" class="btn" disabled>Save Model</button>
+                <button id="load-ls-btn" class="btn">Load Model</button>
+            </div>
+            <div id="ls-status" class="status-msg"></div>
+        </div>
+
+        <!-- PART 5: Export Model Files -->
+        <div class="section">
+            <h2>4. Export Model (Download)</h2>
+            <div class="control-group">
+                <button id="export-btn" class="btn" disabled>Export Model</button>
+            </div>
+            <div id="export-status" class="status-msg"></div>
+            <p class="helper-text">Downloads <code>student-model.json</code> and <code>student-model.weights.bin</code>
+                to your computer.</p>
+        </div>
+
+        <!-- PART 6: Import Model Files -->
+        <div class="section">
+            <h2>5. Import Model (Upload)</h2>
+            <div class="control-group upload-group">
+                <label class="file-label">
+                    <span>1. Upload <b>model.json</b>:</span>
+                    <input type="file" id="json-upload" accept=".json">
+                </label>
+                <label class="file-label">
+                    <span>2. Upload <b>weights.bin</b>:</span>
+                    <input type="file" id="weights-upload" accept=".bin">
+                </label>
+                <button id="import-btn" class="btn">Import Model Files</button>
+            </div>
+            <div id="import-status" class="status-msg"></div>
+        </div>
+
+    </div>
+
+    <!-- Main JS logic -->
+    <script src="script.js"></script>
+</body>
+
+</html>
