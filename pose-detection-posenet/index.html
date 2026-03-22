@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pose Detection and Exercise Repetition Counter</title>
+
+    <!-- TensorFlow.js and PoseNet loaded via CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/posenet"></script>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <header>
+        <h1>Pose Detection and Exercise Repetition Counter using PoseNet</h1>
+        <div class="student-info">
+            <p><strong>Name:</strong> Kanchan Gaikwad</p>
+            <p><strong>USN NO.:</strong> CM23004</p>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <div class="controls">
+            <div>
+                <strong>Status:</strong> <span id="status">Waiting for initialization...</span>
+            </div>
+            <div>
+                <button id="toggle-mode" class="btn">Switch to Multi Pose</button>
+            </div>
+        </div>
+
+        <div class="dashboard logic-dashboard">
+            <div class="card rep-card">
+                <h3>Repetition Count</h3>
+                <div class="value highlight-text" id="rep-val">0</div>
+            </div>
+            <div class="card state-card posture-correct" id="state-card">
+                <h3>Current Posture</h3>
+                <div class="value state-text" id="state-val">UP</div>
+            </div>
+            <div class="card">
+                <h3>Knee Angle</h3>
+                <div class="value" id="angle-val">0°</div>
+            </div>
+        </div>
+
+        <div class="dashboard">
+            <div class="card">
+                <h3>Mode</h3>
+                <div class="value" id="current-mode">Single Pose</div>
+            </div>
+            <div class="card">
+                <h3>FPS</h3>
+                <div class="value" id="fps-val">0</div>
+            </div>
+            <div class="card">
+                <h3>Accuracy (Avg Conf)</h3>
+                <div class="value" id="conf-val">0.00</div>
+            </div>
+        </div>
+
+        <div class="video-container">
+            <!-- Hidden video element for webcam feed -->
+            <video id="video" width="640" height="480" playsinline autoplay></video>
+            <!-- Canvas overlay for drawing the webcam feed and skeleton -->
+            <canvas id="output"></canvas>
+        </div>
+
+    </div>
+
+    <!-- Main Logic Script (No frameworks, Native JS) -->
+    <script src="script.js"></script>
+
+</body>
+
+</html>
