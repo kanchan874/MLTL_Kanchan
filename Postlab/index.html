@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MoodTune AI — Camera Mood Detection</title>
+  <meta name="description" content="AI-powered music recommendation that detects your mood via camera, voice, or text and plays the perfect playlist."/>
+  <link rel="stylesheet" href="style.css"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <!-- Inline Login Styles -->
+  <style>
+    /* ═══ LOGIN PAGE OVERLAY ════════════════════════════════════ */
+    #loginOverlay {
+      position: fixed; inset: 0;
+      background: #0d0720;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.5s ease;
+    }
+    #loginOverlay.fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .login-bg-orb {
+      position: absolute; border-radius: 50%;
+      filter: blur(100px); pointer-events: none;
+    }
+    .login-bg-orb.lo1 { width:500px;height:500px; background:radial-gradient(circle,rgba(138,43,226,0.4) 0%,transparent 70%); top:-150px;left:-150px; }
+    .login-bg-orb.lo2 { width:400px;height:400px; background:radial-gradient(circle,rgba(212,175,55,0.25) 0%,transparent 70%); bottom:-100px;right:-100px; }
+    .login-card {
+      position: relative;
+      background: rgba(35,21,69,0.95);
+      border: 1px solid rgba(212,175,55,0.3);
+      border-radius: 28px;
+      padding: 52px 48px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(212,175,55,0.08);
+      backdrop-filter: blur(20px);
+      animation: loginPopIn 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+    @keyframes loginPopIn {
+      from { transform: scale(0.85) translateY(20px); opacity: 0; }
+      to   { transform: scale(1) translateY(0);        opacity: 1; }
+    }
+    .login-logo {
+      display: flex; align-items: center; justify-content: center; gap: 12px;
+      margin-bottom: 32px;
+    }
+    .login-logo-icon {
+      width: 52px; height: 52px;
+      background: linear-gradient(135deg,#d4af37,#8b6914);
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px; color: #1a0f2e; font-weight: 700;
+      box-shadow: 0 6px 24px rgba(212,175,55,0.5);
+    }
+    .login-logo-text { display: flex; flex-direction: column; }
+    .login-logo-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px; font-weight: 700;
+      color: #f0d060;
+    }
+    .login-logo-tag {
+      font-size: 10px; color: rgba(201,184,224,0.6);
+      letter-spacing: 1.5px; text-transform: uppercase;
+    }
+    .login-heading {
+      font-family: 'Playfair Display', serif;
+      font-size: 26px; font-weight: 700;
+      color: #f5ecd7;
+      margin-bottom: 6px;
+      text-align: center;
+    }
+    .login-sub {
+      font-size: 13px; color: rgba(201,184,224,0.7);
+      text-align: center; margin-bottom: 32px;
+      line-height: 1.6;
+    }
+    .login-field-group { display: flex; flex-direction: column; gap: 14px; margin-bottom: 20px; }
+    .login-field-wrap { position: relative; }
+    .login-field-icon {
+      position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+      font-size: 15px; pointer-events: none;
+    }
+    .login-field {
+      width: 100%;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(212,175,55,0.2);
+      border-radius: 14px;
+      padding: 14px 16px 14px 44px;
+      color: #f5ecd7;
+      font-family: 'Outfit', sans-serif;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.25s, box-shadow 0.25s;
+    }
+    .login-field::placeholder { color: rgba(201,184,224,0.4); }
+    .login-field:focus {
+      border-color: rgba(212,175,55,0.6);
+      box-shadow: 0 0 0 3px rgba(212,175,55,0.12);
+      background: rgba(255,255,255,0.07);
+    }
+    .login-btn {
+      width: 100%;
+      background: linear-gradient(135deg,#d4af37,#b8962a);
+      color: #1a0f2e;
+      border: none;
+      border-radius: 14px;
+      padding: 15px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 15px; font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 6px 24px rgba(212,175,55,0.4);
+      letter-spacing: 0.5px;
+      margin-bottom: 16px;
+    }
+    .login-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 32px rgba(212,175,55,0.55); background: linear-gradient(135deg,#f0d060,#d4af37); }
+    .login-btn:active { transform: translateY(0); }
+    .login-error {
+      display: none;
+      color: #f87171;
+      font-size: 12.5px;
+      text-align: center;
+      padding: 8px 12px;
+      background: rgba(248,113,113,0.1);
+      border: 1px solid rgba(248,113,113,0.25);
+      border-radius: 8px;
+      margin-bottom: 14px;
+    }
+    .login-hint {
+      text-align: center;
+      font-size: 12px;
+      color: rgba(201,184,224,0.5);
+    }
+    .login-hint strong { color: rgba(212,175,55,0.8); }
+    .login-divider {
+      display: flex; align-items: center; gap: 12px;
+      margin: 20px 0;
+    }
+    .login-divider-line { flex: 1; height: 1px; background: rgba(212,175,55,0.15); }
+    .login-divider-text { font-size: 11px; color: rgba(201,184,224,0.4); white-space: nowrap; }
+    .login-guest-btn {
+      width: 100%;
+      background: transparent;
+      border: 1px solid rgba(212,175,55,0.25);
+      border-radius: 14px;
+      padding: 12px;
+      color: rgba(201,184,224,0.7);
+      font-family: 'Outfit', sans-serif;
+      font-size: 13px; font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .login-guest-btn:hover { border-color: rgba(212,175,55,0.5); color: #f5ecd7; background: rgba(212,175,55,0.06); }
+  </style>
+</head>
+<body>
+
+  <!-- ═══ LOGIN OVERLAY ══════════════════════════════════════ -->
+  <div id="loginOverlay">
+    <div class="login-bg-orb lo1"></div>
+    <div class="login-bg-orb lo2"></div>
+    <div class="login-card">
+      <!-- Logo -->
+      <div class="login-logo">
+        <div class="login-logo-icon">𝄞</div>
+        <div class="login-logo-text">
+          <div class="login-logo-name">MoodTune</div>
+          <div class="login-logo-tag">AI Edition ✦</div>
+        </div>
+      </div>
+
+      <h2 class="login-heading">Welcome Back 👋</h2>
+      <p class="login-sub">Sign in to continue your mood-music journey</p>
+
+      <!-- Error Message -->
+      <div class="login-error" id="loginError">Incorrect username or password. Please try again.</div>
+
+      <!-- Input Fields -->
+      <div class="login-field-group">
+        <div class="login-field-wrap">
+          <span class="login-field-icon">👤</span>
+          <input
+            type="text"
+            id="loginUsername"
+            class="login-field"
+            placeholder="Username"
+            autocomplete="username"
+            maxlength="40"
+          />
+        </div>
+        <div class="login-field-wrap">
+          <span class="login-field-icon">🔒</span>
+          <input
+            type="password"
+            id="loginPassword"
+            class="login-field"
+            placeholder="Password"
+            autocomplete="current-password"
+            maxlength="40"
+          />
+        </div>
+      </div>
+
+      <!-- Login Button -->
+      <button class="login-btn" id="loginBtn" onclick="doLogin()">Sign In ✦</button>
+
+      <div class="login-divider">
+        <div class="login-divider-line"></div>
+        <span class="login-divider-text">or continue as</span>
+        <div class="login-divider-line"></div>
+      </div>
+
+      <!-- Guest Button -->
+      <button class="login-guest-btn" onclick="loginAsGuest()">👤 &nbsp;Guest Mode</button>
+
+      <!-- Demo credentials hint -->
+      <p class="login-hint" style="margin-top:18px">
+        Demo: <strong>admin</strong> / <strong>1234</strong> &nbsp;·&nbsp; or any credentials ✦
+      </p>
+    </div>
+  </div>
+
+  <!-- ═══ DYNAMIC AMBIENT BACKGROUND ═══════════════════════ -->
+  <div class="ambient" id="ambientBg">
+    <div class="orb o1" id="orb1"></div>
+    <div class="orb o2" id="orb2"></div>
+    <div class="orb o3" id="orb3"></div>
+    <div class="noise"></div>
+  </div>
+
+  <!-- ═══ AI LOADING OVERLAY ════════════════════════════════ -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-card">
+      <div class="ai-scanner">
+        <div class="scanner-ring r1"></div>
+        <div class="scanner-ring r2"></div>
+        <div class="scanner-ring r3"></div>
+        <div class="scanner-face">🤖</div>
+      </div>
+      <div class="loading-title" id="loadingTitle">Analyzing Your Mood…</div>
+      <!-- Emotion bars – fill up during detection -->
+      <div class="loading-bars">
+        <div class="lb-item">
+          <span class="lb-emoji">😄</span>
+          <span class="lb-label">Happy</span>
+          <div class="lb-track"><div class="lb-fill" id="lbf-happy" style="--clr:#f59e0b"></div></div>
+          <span class="lb-pct" id="lbp-happy">0%</span>
+        </div>
+        <div class="lb-item">
+          <span class="lb-emoji">😢</span>
+          <span class="lb-label">Sad</span>
+          <div class="lb-track"><div class="lb-fill" id="lbf-sad" style="--clr:#818cf8"></div></div>
+          <span class="lb-pct" id="lbp-sad">0%</span>
+        </div>
+        <div class="lb-item">
+          <span class="lb-emoji">😌</span>
+          <span class="lb-label">Calm</span>
+          <div class="lb-track"><div class="lb-fill" id="lbf-calm" style="--clr:#34d399"></div></div>
+          <span class="lb-pct" id="lbp-calm">0%</span>
+        </div>
+        <div class="lb-item">
+          <span class="lb-emoji">⚡</span>
+          <span class="lb-label">Energetic</span>
+          <div class="lb-track"><div class="lb-fill" id="lbf-energetic" style="--clr:#f87171"></div></div>
+          <span class="lb-pct" id="lbp-energetic">0%</span>
+        </div>
+        <div class="lb-item">
+          <span class="lb-emoji">😡</span>
+          <span class="lb-label">Angry</span>
+          <div class="lb-track"><div class="lb-fill" id="lbf-angry" style="--clr:#dc2626"></div></div>
+          <span class="lb-pct" id="lbp-angry">0%</span>
+        </div>
+      </div>
+      <div class="loading-status" id="loadingStatus">Initializing AI engine…</div>
+    </div>
+  </div>
+
+  <div class="layout">
+
+    <!-- ═══ SIDEBAR ═══════════════════════════════════════ -->
+    <aside class="sidebar">
+
+      <div class="brand">
+        <div class="brand-icon">𝄞</div>
+        <div>
+          <div class="brand-name">MoodTune</div>
+          <div class="brand-tag">AI Edition ✦</div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a class="nav-item active" href="#" id="navDiscover" onclick="resetToDiscover(); return false;">
+          <span class="nav-ico">⊞</span><span>Discover</span>
+        </a>
+        <a class="nav-item" href="#" id="navMyMusic" onclick="scrollToSongs(); return false;">
+          <span class="nav-ico">♪</span><span>My Music</span>
+        </a>
+        <a class="nav-item" href="#" id="navFavourites" onclick="goToFavourites(); return false;">
+          <span class="nav-ico">♡</span><span>Favourites</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-divider"></div>
+
+      <!-- Current mood pill -->
+      <div class="sidebar-label">Current Mood</div>
+      <div class="mood-pill" id="sidebarMood">
+        <span id="sidebarMoodIcon">✦</span>
+        <span id="sidebarMoodText">Not detected yet</span>
+      </div>
+
+      <!-- Mood History in sidebar -->
+      <div class="sidebar-label mt24">Mood History</div>
+      <div class="hist-list" id="histList">
+        <div class="hist-empty">No history yet</div>
+      </div>
+
+      <div class="sidebar-label mt24">Quick Mood</div>
+      <div class="mood-buttons">
+        <button class="mood-btn" onclick="manualMood('happy')">
+          <span class="mbtn-dot" style="background:#f59e0b"></span>😄 Happy
+        </button>
+        <button class="mood-btn" onclick="manualMood('sad')">
+          <span class="mbtn-dot" style="background:#6366f1"></span>😢 Sad
+        </button>
+        <button class="mood-btn" onclick="manualMood('energetic')">
+          <span class="mbtn-dot" style="background:#ef4444"></span>⚡ Energetic
+        </button>
+        <button class="mood-btn" onclick="manualMood('calm')">
+          <span class="mbtn-dot" style="background:#10b981"></span>😌 Calm
+        </button>
+        <button class="mood-btn" onclick="manualMood('angry')">
+          <span class="mbtn-dot" style="background:#dc2626"></span>😡 Angry
+        </button>
+      </div>
+
+      <!-- Sidebar now-playing mini card -->
+      <div class="sidebar-np" id="sidebarNP" style="display:none">
+        <div class="sidebar-label mt24">Now Playing</div>
+        <div class="snp-inner">
+          <div class="snp-art" id="snpArt">♪</div>
+          <div class="snp-info">
+            <div class="snp-name"   id="snpName">—</div>
+            <div class="snp-artist" id="snpArtist">—</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── User Profile + Logout ── -->
+      <div class="sidebar-user" id="sidebarUser">
+        <div class="su-avatar" id="suAvatar">👤</div>
+        <div class="su-info">
+          <div class="su-name" id="suName">Guest</div>
+          <div class="su-status">✦ Logged in</div>
+        </div>
+        <button class="su-logout" onclick="logoutUser()" title="Logout">⏻</button>
+      </div>
+
+    </aside>
+
+    <!-- ═══ MAIN ══════════════════════════════════════════ -->
+    <main class="main">
+
+      <!-- ── Hero Section ──────────────────────────────── -->
+      <section class="hero">
+        <div class="hero-eyebrow">✦ &nbsp;AI Camera · Voice · Text Detection</div>
+        <h1 class="hero-title" id="heroTitle">
+          How are you<br/><em>feeling today?</em>
+        </h1>
+        <p class="hero-sub" id="heroSub">
+          Point your camera, speak, or type — our AI detects your mood and builds the perfect playlist.
+        </p>
+
+        <!-- ── Input Mode Switcher ── -->
+        <div class="mode-tabs">
+          <button class="mode-tab active" id="modeCamera" onclick="switchMode('camera')" title="Detect mood from webcam">
+            <span>📷</span> Camera
+          </button>
+          <button class="mode-tab" id="modeVoice" onclick="switchMode('voice')" title="Speak your mood">
+            <span>🎤</span> Voice
+          </button>
+          <button class="mode-tab" id="modeText" onclick="switchMode('text')" title="Type your mood">
+            <span>✏️</span> Text
+          </button>
+        </div>
+
+        <!-- ════ CAMERA PANEL ════ -->
+        <div class="input-panel" id="panelCamera">
+          <div class="camera-card">
+            <div class="camera-feed-wrap">
+              <!-- Live webcam video -->
+              <video id="cameraFeed" class="camera-feed" autoplay muted playsinline></video>
+              <!-- Animated face scan box -->
+              <div class="face-scan-box" id="faceScanBox" style="display:none">
+                <div class="fsb-corner tl"></div>
+                <div class="fsb-corner tr"></div>
+                <div class="fsb-corner bl"></div>
+                <div class="fsb-corner br"></div>
+                <div class="scan-line" id="scanLine"></div>
+              </div>
+              <!-- Camera placeholder shown before start -->
+              <div class="camera-overlay" id="cameraOverlay">
+                <div class="cam-placeholder">
+                  <div class="cam-icon">📷</div>
+                  <div class="cam-text">Camera not started</div>
+                  <div class="cam-sub">Click "Start Camera" below</div>
+                </div>
+              </div>
+              <!-- Live status label inside video -->
+              <div class="cam-status-badge" id="camStatus"></div>
+            </div>
+
+            <!-- Camera buttons -->
+            <div class="camera-controls">
+              <button class="btn-cam-start" id="startCamBtn" onclick="startCamera()">
+                📷 &nbsp;Start Camera
+              </button>
+              <button class="btn-cam-detect" id="detectCamBtn" onclick="detectMoodFromCamera()" disabled>
+                <span class="detect-pulse"></span> Detect Mood
+              </button>
+              <button class="btn-try-again" id="tryAgainBtn" onclick="tryAgain()" style="display:none">
+                ↺ Try Again
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ════ VOICE PANEL ════ -->
+        <div class="input-panel hidden" id="panelVoice">
+          <div class="voice-card">
+            <div class="voice-visual" id="voiceVisual">
+              <div class="voice-ring vr1"></div>
+              <div class="voice-ring vr2"></div>
+              <div class="voice-ring vr3"></div>
+              <div class="mic-btn-inner" id="micIcon">🎤</div>
+            </div>
+            <div class="voice-label" id="voiceLabel">Click mic to start speaking</div>
+            <div class="voice-transcript" id="voiceTranscript"></div>
+            <button class="btn-mic" id="micBtn" onclick="startVoice()">
+              🎤 &nbsp;Start Listening
+            </button>
+            <div class="voice-examples">
+              Say: &nbsp;<em>"Play happy songs"</em> &nbsp;·&nbsp; <em>"I feel sad"</em> &nbsp;·&nbsp; <em>"Energetic music"</em>
+            </div>
+          </div>
+        </div>
+
+        <!-- ════ TEXT PANEL ════ -->
+        <div class="input-panel hidden" id="panelText">
+          <div class="input-shell">
+            <div class="input-glow"></div>
+            <div class="input-row">
+              <span class="input-prefix">✦</span>
+              <input
+                type="text"
+                id="moodInput"
+                class="mood-input"
+                placeholder="e.g. I feel so happy and excited today..."
+                maxlength="120"
+                autocomplete="off"
+              />
+              <button class="btn-detect" id="detectBtn" onclick="detectMoodFromText()">
+                <span>Detect Mood</span>
+                <span class="btn-arrow">→</span>
+              </button>
+            </div>
+          </div>
+          <p class="input-hint" id="inputHint">
+            Press Enter or click Detect Mood to find your playlist.
+          </p>
+          <!-- Quick-fill chips -->
+          <div class="chips-row">
+            <span class="chip" onclick="fillExample('I am so happy and full of joy today!')">😄 Happy</span>
+            <span class="chip" onclick="fillExample('I feel sad and lonely right now')">😢 Sad</span>
+            <span class="chip" onclick="fillExample('I am pumped and super energetic!')">⚡ Energetic</span>
+            <span class="chip" onclick="fillExample('I want to relax and find some peace')">😌 Calm</span>
+            <span class="chip" onclick="fillExample('I am very angry and frustrated today')">😡 Angry</span>
+          </div>
+        </div>
+
+        <!-- ── Detected Mood Result Badge ── -->
+        <div class="mood-result" id="moodResult" style="display:none">
+          <div class="mr-emoji" id="mrEmoji">😊</div>
+          <div class="mr-info">
+            <div class="mr-label">Detected Mood</div>
+            <div class="mr-mood" id="mrMood">Happy</div>
+          </div>
+          <div class="mr-conf-wrap">
+            <div class="mr-conf" id="mrConf">87% confidence</div>
+            <div class="mr-source" id="mrSource">via camera</div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ── Songs Section ──────────────────────────────── -->
+      <section id="songsSection" style="display:none">
+
+        <!-- Mood banner -->
+        <div class="mood-banner" id="moodBanner">
+          <div class="mb-left">
+            <div class="mb-icon" id="mbIcon">✦</div>
+            <div>
+              <div class="mb-mood" id="mbMood">Happy</div>
+              <div class="mb-desc" id="mbDesc">8 songs curated for you</div>
+            </div>
+          </div>
+          <button class="btn-change" onclick="resetMood()">↺ Change Mood</button>
+        </div>
+
+        <!-- Tab bar: All | Playlist | Favourites -->
+        <div class="tab-bar">
+          <button class="tab active" id="tabAll"  onclick="switchTab('all')">All Songs</button>
+          <button class="tab"        id="tabPl"   onclick="switchTab('playlist')">My Playlist
+            <span class="tab-badge" id="plBadge">0</span>
+          </button>
+          <button class="tab"        id="tabFav"  onclick="switchTab('favourites')">Favourites
+            <span class="tab-badge" id="favBadge">0</span>
+          </button>
+        </div>
+
+        <!-- Song cards grid -->
+        <div class="songs-list" id="songsGrid"></div>
+
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ═══ BOTTOM PLAYER ════════════════════════════════════ -->
+  <div class="player-bar" id="playerBar">
+    <div class="player-stripe" id="playerStripe"></div>
+
+    <div class="player-left">
+      <div class="player-art" id="playerArt">♪</div>
+      <div class="player-meta">
+        <div class="player-title"  id="playerTitle">Select a song</div>
+        <div class="player-artist" id="playerArtist">—</div>
+      </div>
+      <button class="p-icon-btn" id="likeBtn"  onclick="toggleLike()"     title="Favourite">♡</button>
+      <button class="p-icon-btn" id="plBtn"    onclick="addToPlaylist()"   title="Add to Playlist">＋</button>
+    </div>
+
+    <div class="player-center">
+      <div class="ctrl-row">
+        <button class="ctrl" id="shuffleBtn" onclick="toggleShuffle()" title="Shuffle">⇄</button>
+        <button class="ctrl" onclick="prevSong()"  title="Previous">⏮</button>
+        <button class="ctrl play-btn" id="ppBtn" onclick="togglePlay()">▶</button>
+        <button class="ctrl" onclick="nextSong()"  title="Next">⏭</button>
+        <button class="ctrl" id="repeatBtn"  onclick="toggleRepeat()" title="Repeat">↻</button>
+      </div>
+      <div class="prog-row">
+        <span class="time" id="timeCur">0:00</span>
+        <div class="prog-track" id="progTrack" onclick="seekTo(event)">
+          <div class="prog-fill"  id="progFill"></div>
+          <div class="prog-thumb" id="progThumb"></div>
+        </div>
+        <span class="time" id="timeTot">0:00</span>
+      </div>
+    </div>
+
+    <div class="player-right">
+      <span class="vol-label">🔊</span>
+      <input class="vol-range" type="range" id="volRange" min="0" max="100" value="80"
+             oninput="setVolume(this.value)"/>
+    </div>
+
+    <audio id="audioPlayer" preload="none"></audio>
+  </div>
+
+  <!-- Deep Learning Model for Facial Emotion Recognition -->
+  <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+  
+  <script src="script.js"></script>
+</body>
+</html>
