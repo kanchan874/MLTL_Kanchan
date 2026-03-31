@@ -1,479 +1,1305 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>ML Tools Lab — Kanchan Gaikwad</title>
-<style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ML Tools Lab — Kanchan Gaikwad</title>
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
+    html {
+      scroll-behavior: smooth;
+    }
 
-:root {
-  --cream:        #faf8f4;
-  --paper:        #f5f0ea;
-  --white:        #ffffff;
-  --lavender:     #ede8f8;
-  --lavender2:    #d8cff5;
-  --lavender3:    #b8a9e8;
-  --purple:       #7c5cbf;
-  --purple2:      #9b7dd4;
-  --purple-deep:  #4a3580;
-  --gold:         #c9a84c;
-  --gold-light:   #f0dfa0;
-  --gold-pale:    #fdf6e3;
-  --ink:          #1e1828;
-  --ink2:         #3d3452;
-  --ink3:         #7a6e96;
-  --ink4:         #b0a8c8;
-  --border:       rgba(124,92,191,0.12);
-  --border2:      rgba(124,92,191,0.22);
-  --shadow-sm:    0 2px 16px rgba(74,53,128,0.07);
-  --shadow-md:    0 8px 40px rgba(74,53,128,0.11);
-  --shadow-lg:    0 20px 60px rgba(74,53,128,0.16);
-  --radius:       20px;
-}
+    :root {
+      --cream: #faf8f4;
+      --paper: #f5f0ea;
+      --white: #ffffff;
+      --lavender: #ede8f8;
+      --lavender2: #d8cff5;
+      --lavender3: #b8a9e8;
+      --purple: #7c5cbf;
+      --purple2: #9b7dd4;
+      --purple-deep: #4a3580;
+      --gold: #c9a84c;
+      --gold-light: #f0dfa0;
+      --gold-pale: #fdf6e3;
+      --ink: #1e1828;
+      --ink2: #3d3452;
+      --ink3: #7a6e96;
+      --ink4: #b0a8c8;
+      --border: rgba(124, 92, 191, 0.12);
+      --border2: rgba(124, 92, 191, 0.22);
+      --shadow-sm: 0 2px 16px rgba(74, 53, 128, 0.07);
+      --shadow-md: 0 8px 40px rgba(74, 53, 128, 0.11);
+      --shadow-lg: 0 20px 60px rgba(74, 53, 128, 0.16);
+      --radius: 20px;
+    }
 
-body {
-  background: var(--cream);
-  color: var(--ink);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-  min-height: 100vh;
-  line-height: 1.6;
-  overflow-x: hidden;
-}
-body::before {
-  content: '';
-  position: fixed; inset: 0; z-index: 0; pointer-events: none;
-  background:
-    radial-gradient(ellipse 70% 50% at 0% 0%,   rgba(180,160,230,0.13) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 50% at 100% 100%, rgba(201,168,76,0.08)  0%, transparent 60%),
-    radial-gradient(ellipse 50% 40% at 100% 0%,  rgba(220,200,250,0.10) 0%, transparent 55%),
-    radial-gradient(ellipse 40% 30% at 0% 100%,  rgba(196,216,200,0.10) 0%, transparent 55%);
-}
-body::after {
-  content: '';
-  position: fixed; inset: 0; z-index: 0; pointer-events: none;
-  background-image: radial-gradient(circle, rgba(124,92,191,0.07) 1px, transparent 1px);
-  background-size: 28px 28px;
-}
-.page { position: relative; z-index: 1; }
+    body {
+      background: var(--cream);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      min-height: 100vh;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
 
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(24px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50%       { transform: translateY(-6px); }
-}
-@keyframes shimmer {
-  0%   { background-position: -200% center; }
-  100% { background-position: 200% center; }
-}
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse 70% 50% at 0% 0%, rgba(180, 160, 230, 0.13) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 100% 100%, rgba(201, 168, 76, 0.08) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 100% 0%, rgba(220, 200, 250, 0.10) 0%, transparent 55%),
+        radial-gradient(ellipse 40% 30% at 0% 100%, rgba(196, 216, 200, 0.10) 0%, transparent 55%);
+    }
 
-/* NAVBAR */
-.navbar {
-  position: sticky; top: 0; z-index: 100;
-  background: rgba(250,248,244,0.88);
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--border2);
-  padding: 0 48px; height: 60px;
-  display: flex; align-items: center; justify-content: space-between;
-  animation: fadeUp 0.5s ease both;
-}
-.nav-left { display: flex; align-items: center; gap: 14px; }
-.nav-badge {
-  background: linear-gradient(135deg, var(--purple), var(--purple2));
-  color: #fff; font-size: 10px; font-weight: 700;
-  letter-spacing: 1.5px; text-transform: uppercase;
-  padding: 4px 12px; border-radius: 20px;
-  box-shadow: 0 2px 12px rgba(124,92,191,0.3);
-}
-.nav-name { font-size: 14px; font-weight: 600; color: var(--ink2); }
-.nav-right { display: flex; align-items: center; gap: 24px; }
-.nav-tag { font-size: 11px; color: var(--ink3); letter-spacing: 0.5px; padding: 4px 14px; background: var(--lavender); border-radius: 20px; border: 1px solid var(--border2); }
-.nav-dot { width: 6px; height: 6px; border-radius: 50%; background: linear-gradient(135deg, var(--gold), var(--purple2)); box-shadow: 0 0 8px rgba(201,168,76,0.5); }
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background-image: radial-gradient(circle, rgba(124, 92, 191, 0.07) 1px, transparent 1px);
+      background-size: 28px 28px;
+    }
 
-/* HERO */
-.hero {
-  padding: 80px 48px 70px;
-  display: grid; grid-template-columns: 1fr 380px;
-  gap: 60px; align-items: center;
-  max-width: 1160px; margin: 0 auto;
-  animation: fadeUp 0.7s 0.1s ease both;
-}
-.hero-eyebrow { display: inline-flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 600; letter-spacing: 2.5px; text-transform: uppercase; color: var(--purple); background: var(--lavender); border: 1px solid var(--border2); border-radius: 20px; padding: 6px 16px; margin-bottom: 24px; }
-.hero-eyebrow .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 6px rgba(201,168,76,0.6); }
-.hero-heading { font-size: clamp(32px, 4.5vw, 56px); font-weight: 800; line-height: 1.1; letter-spacing: -1.5px; color: var(--ink); margin-bottom: 10px; }
-.hero-heading .grad { background: linear-gradient(135deg, var(--purple-deep) 0%, var(--purple2) 50%, var(--gold) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; background-size: 200% auto; animation: shimmer 4s linear infinite; }
-.hero-sub-heading { font-size: clamp(18px, 2vw, 24px); font-weight: 300; color: var(--ink3); margin-bottom: 24px; }
-.hero-desc { font-size: 15px; color: var(--ink3); line-height: 1.8; max-width: 480px; margin-bottom: 36px; }
-.hero-chips { display: flex; flex-wrap: wrap; gap: 10px; }
-.chip { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; padding: 7px 16px; border-radius: 20px; border: 1px solid var(--border2); background: var(--white); color: var(--ink2); box-shadow: var(--shadow-sm); transition: all 0.25s ease; }
-.chip:hover { background: var(--lavender); border-color: var(--lavender3); transform: translateY(-2px); }
-.chip-icon { font-size: 14px; }
+    .page {
+      position: relative;
+      z-index: 1;
+    }
 
-/* PROFILE CARD */
-.profile-card { background: rgba(255,255,255,0.72); backdrop-filter: blur(24px); border: 1px solid rgba(255,255,255,0.9); border-radius: 28px; padding: 36px 32px; box-shadow: var(--shadow-lg), 0 0 0 1px rgba(124,92,191,0.08); position: relative; overflow: hidden; animation: float 6s ease-in-out infinite; }
-.profile-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, var(--purple-deep), var(--purple2), var(--gold)); border-radius: 28px 28px 0 0; }
-.profile-card::after { content: ''; position: absolute; bottom: -60px; right: -60px; width: 200px; height: 200px; border-radius: 50%; background: radial-gradient(circle, rgba(180,160,230,0.18) 0%, transparent 70%); pointer-events: none; }
-.card-avatar { width: 72px; height: 72px; border-radius: 50%; background: linear-gradient(135deg, var(--purple-deep), var(--purple2)); display: flex; align-items: center; justify-content: center; font-size: 28px; margin-bottom: 20px; box-shadow: 0 8px 24px rgba(74,53,128,0.25); position: relative; z-index: 1; }
-.card-name { font-size: 22px; font-weight: 800; color: var(--ink); letter-spacing: -0.5px; margin-bottom: 4px; position: relative; z-index: 1; }
-.card-roll { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--purple); background: var(--lavender); padding: 4px 12px; border-radius: 20px; margin-bottom: 24px; position: relative; z-index: 1; }
-.card-divider { height: 1px; background: linear-gradient(90deg, transparent, var(--border2), transparent); margin: 20px 0; }
-.card-fields { display: flex; flex-direction: column; gap: 14px; position: relative; z-index: 1; }
-.field-label { font-size: 9px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--ink4); margin-bottom: 3px; }
-.field-val { font-size: 13px; font-weight: 600; color: var(--ink2); }
-.card-footer { margin-top: 24px; padding: 14px 18px; background: linear-gradient(135deg, var(--lavender), var(--gold-pale)); border-radius: 12px; display: flex; align-items: center; gap: 10px; position: relative; z-index: 1; }
-.card-footer-icon { font-size: 20px; }
-.cft-title { font-size: 11px; font-weight: 700; color: var(--purple-deep); }
-.cft-sub { font-size: 10px; color: var(--ink3); }
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(24px);
+      }
 
-/* STATS */
-.divider { height: 1px; background: linear-gradient(90deg, transparent, var(--border2), transparent); margin: 0 48px; }
-.stats-strip { background: var(--white); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 32px 48px; display: flex; justify-content: center; margin-bottom: 80px; animation: fadeUp 0.6s 0.3s ease both; }
-.stat { flex: 1; max-width: 200px; text-align: center; padding: 0 28px; border-right: 1px solid var(--border); }
-.stat:last-child { border-right: none; }
-.stat-val { font-size: 36px; font-weight: 900; letter-spacing: -1.5px; background: linear-gradient(135deg, var(--purple-deep), var(--purple2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1; margin-bottom: 6px; }
-.stat-lbl { font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--ink4); }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
 
-/* SECTION */
-.section-wrap { max-width: 1160px; margin: 0 auto; padding: 0 48px 100px; }
-.section-head { text-align: center; margin-bottom: 70px; animation: fadeUp 0.6s 0.2s ease both; }
-.section-kicker { display: inline-flex; align-items: center; gap: 8px; font-size: 10px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--purple); margin-bottom: 14px; }
-.section-kicker::before, .section-kicker::after { content: ''; display: inline-block; width: 24px; height: 1px; background: linear-gradient(90deg, transparent, var(--purple2)); }
-.section-kicker::after { background: linear-gradient(90deg, var(--purple2), transparent); }
-.section-title { font-size: clamp(26px, 3.5vw, 40px); font-weight: 800; letter-spacing: -1px; color: var(--ink); line-height: 1.15; margin-bottom: 12px; }
-.section-desc { font-size: 15px; color: var(--ink3); max-width: 500px; margin: 0 auto; }
+    @keyframes float {
 
-/* TIMELINE */
-.timeline { position: relative; display: flex; flex-direction: column; }
-.timeline::before {
-  content: ''; position: absolute; left: 50%; top: 0; bottom: 0; width: 2px;
-  background: linear-gradient(180deg, transparent 0%, var(--lavender2) 8%, var(--lavender3) 30%, var(--purple2) 60%, var(--lavender2) 92%, transparent 100%);
-  transform: translateX(-50%);
-}
+      0%,
+      100% {
+        transform: translateY(0px);
+      }
 
-.t-item { display: grid; grid-template-columns: 1fr 56px 1fr; align-items: start; min-height: 160px; padding-bottom: 24px; animation: fadeUp 0.6s ease both; }
-.t-item:nth-child(even) .t-card  { grid-column: 3; grid-row: 1; }
-.t-item:nth-child(even) .t-center { grid-column: 2; grid-row: 1; }
-.t-item:nth-child(even) .t-spacer { grid-column: 1; grid-row: 1; }
-.t-item:nth-child(odd)  .t-card  { grid-column: 1; grid-row: 1; }
-.t-item:nth-child(odd)  .t-center { grid-column: 2; grid-row: 1; }
-.t-item:nth-child(odd)  .t-spacer { grid-column: 3; grid-row: 1; }
+      50% {
+        transform: translateY(-6px);
+      }
+    }
 
-.t-center { display: flex; flex-direction: column; align-items: center; position: relative; padding-top: 28px; }
-.t-node { width: 46px; height: 46px; border-radius: 50%; background: var(--white); border: 3px solid var(--lavender2); display: flex; align-items: center; justify-content: center; font-size: 16px; position: relative; z-index: 2; box-shadow: var(--shadow-md); flex-shrink: 0; }
-.t-item.prelab .t-node { border-color: var(--gold); background: var(--gold-pale); box-shadow: 0 4px 20px rgba(201,168,76,0.25); }
-.t-item.postlab .t-node { border-color: #2dd4bf; background: #f0fdfa; box-shadow: 0 4px 20px rgba(45,212,191,0.25); }
+    @keyframes shimmer {
+      0% {
+        background-position: -200% center;
+      }
 
-.t-card { background: var(--white); border: 1px solid rgba(124,92,191,0.10); border-radius: var(--radius); padding: 28px 28px 24px; box-shadow: var(--shadow-sm); text-decoration: none; color: inherit; display: block; position: relative; overflow: hidden; margin: 16px 0; transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.3s ease, border-color 0.3s ease; }
+      100% {
+        background-position: 200% center;
+      }
+    }
 
-.t-item:nth-child(odd)  .t-card::after,
-.t-item:nth-child(even) .t-card::after { content: ''; position: absolute; top: 50px; width: 36px; height: 1px; background: linear-gradient(90deg, var(--lavender2), transparent); }
-.t-item:nth-child(odd)  .t-card::after { right: -36px; }
-.t-item:nth-child(even) .t-card::after { left: -36px; background: linear-gradient(270deg, var(--lavender2), transparent); }
+    /* NAVBAR */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(250, 248, 244, 0.88);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border2);
+      padding: 0 48px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      animation: fadeUp 0.5s ease both;
+    }
 
-.t-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--card-c1, var(--purple-deep)), var(--card-c2, var(--purple2))); border-radius: var(--radius) var(--radius) 0 0; opacity: 0; transition: opacity 0.3s; }
-.t-card:hover { transform: translateY(-6px) scale(1.01); box-shadow: var(--shadow-lg); border-color: var(--border2); }
-.t-card:hover::before { opacity: 1; }
-.t-card:hover .t-btn { background: var(--purple); color: #fff; box-shadow: 0 4px 16px rgba(124,92,191,0.35); }
-.t-card:hover .t-btn-arrow { transform: translateX(4px); }
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
 
-.t-item:nth-child(1)  .t-card { --card-c1: #c9a84c; --card-c2: #e8d080; }
-.t-item:nth-child(2)  .t-card { --card-c1: #7c5cbf; --card-c2: #9b7dd4; }
-.t-item:nth-child(3)  .t-card { --card-c1: #3a7bd5; --card-c2: #7aabf0; }
-.t-item:nth-child(4)  .t-card { --card-c1: #d45bbf; --card-c2: #f07ae8; }
-.t-item:nth-child(5)  .t-card { --card-c1: #4a9d6f; --card-c2: #72c494; }
-.t-item:nth-child(6)  .t-card { --card-c1: #d4753a; --card-c2: #f0a060; }
-.t-item:nth-child(7)  .t-card { --card-c1: #5b6abf; --card-c2: #8090e0; }
-.t-item:nth-child(8)  .t-card { --card-c1: #7abf5b; --card-c2: #a0e080; }
-.t-item:nth-child(9)  .t-card { --card-c1: #bfb05b; --card-c2: #e0d080; }
+    .nav-badge {
+      background: linear-gradient(135deg, var(--purple), var(--purple2));
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 20px;
+      box-shadow: 0 2px 12px rgba(124, 92, 191, 0.3);
+    }
 
-/* Post lab: teal theme, same size as others */
-.t-item.postlab .t-card { background: #f0fdfa; border-color: rgba(45,212,191,0.2); --card-c1: #0d9488; --card-c2: #2dd4bf; }
-.t-item.postlab .t-card:hover { border-color: rgba(45,212,191,0.45); }
-.t-item.postlab .t-card:hover .t-btn { background: #0d9488; color: #fff; box-shadow: 0 4px 16px rgba(13,148,136,0.35); }
+    .nav-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--ink2);
+    }
 
-.t-card-head { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 14px; }
-.t-num { font-size: 10px; font-weight: 800; letter-spacing: 2.5px; text-transform: uppercase; color: var(--purple); background: var(--lavender); padding: 4px 12px; border-radius: 20px; border: 1px solid var(--border2); white-space: nowrap; }
-.t-item.prelab  .t-num { color: #7a5c10; background: var(--gold-pale); border-color: rgba(201,168,76,0.3); }
-.t-item.postlab .t-num { color: #0d9488; background: #ccfbf1; border-color: rgba(45,212,191,0.35); }
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
 
-.t-emoji { font-size: 28px; line-height: 1; }
-.t-title { font-size: 18px; font-weight: 800; color: var(--ink); letter-spacing: -0.4px; line-height: 1.25; margin-bottom: 8px; }
-.t-desc { font-size: 13px; color: var(--ink3); line-height: 1.65; margin-bottom: 20px; }
-.t-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px; }
-.t-tag { font-size: 10px; font-weight: 600; letter-spacing: 0.5px; padding: 3px 10px; border-radius: 20px; background: var(--paper); border: 1px solid var(--border); color: var(--ink3); }
-.t-item.postlab .t-tag { background: #ccfbf1; border-color: rgba(45,212,191,0.3); color: #0f766e; }
+    .nav-tag {
+      font-size: 11px;
+      color: var(--ink3);
+      letter-spacing: 0.5px;
+      padding: 4px 14px;
+      background: var(--lavender);
+      border-radius: 20px;
+      border: 1px solid var(--border2);
+    }
 
-.t-btn { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; letter-spacing: 0.5px; padding: 9px 20px; border-radius: 40px; background: var(--lavender); border: 1.5px solid var(--lavender3); color: var(--purple); text-decoration: none; transition: all 0.25s ease; width: fit-content; }
-.t-item.postlab .t-btn { background: #ccfbf1; border-color: rgba(45,212,191,0.4); color: #0d9488; }
-.t-btn-arrow { transition: transform 0.2s ease; font-size: 14px; }
-.t-spacer {}
+    .nav-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--gold), var(--purple2));
+      box-shadow: 0 0 8px rgba(201, 168, 76, 0.5);
+    }
 
-/* FOOTER */
-.footer { background: var(--ink); color: rgba(255,255,255,0.55); padding: 48px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 40px; align-items: center; }
-.footer-brand { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; background: linear-gradient(135deg, var(--lavender2), var(--gold-light)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 6px; }
-.footer-sub { font-size: 12px; color: rgba(255,255,255,0.3); }
-.footer-mid { text-align: center; }
-.footer-mid-text { font-size: 12px; line-height: 2; color: rgba(255,255,255,0.35); }
-.footer-mid-text b { color: rgba(255,255,255,0.65); }
-.footer-right { text-align: right; }
-.footer-made { font-size: 11px; color: rgba(255,255,255,0.25); letter-spacing: 1px; text-transform: uppercase; }
-.footer-year { font-size: 28px; font-weight: 800; color: rgba(255,255,255,0.08); letter-spacing: -1px; }
+    /* HERO */
+    .hero {
+      padding: 80px 48px 70px;
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 60px;
+      align-items: center;
+      max-width: 1160px;
+      margin: 0 auto;
+      animation: fadeUp 0.7s 0.1s ease both;
+    }
 
-/* RESPONSIVE */
-@media (max-width: 900px) {
-  .hero { grid-template-columns: 1fr; gap: 40px; padding: 48px 24px 40px; }
-  .profile-card { animation: none; }
-  .section-wrap { padding: 0 24px 80px; }
-  .timeline::before { left: 24px; transform: none; }
-  .t-item { grid-template-columns: 48px 1fr !important; padding-bottom: 16px; }
-  .t-item:nth-child(odd) .t-card,
-  .t-item:nth-child(even) .t-card { grid-column: 2 !important; grid-row: 1 !important; }
-  .t-item:nth-child(odd) .t-center,
-  .t-item:nth-child(even) .t-center { grid-column: 1 !important; grid-row: 1 !important; }
-  .t-item:nth-child(odd) .t-spacer,
-  .t-item:nth-child(even) .t-spacer { display: none !important; }
-  .t-item:nth-child(odd) .t-card::after,
-  .t-item:nth-child(even) .t-card::after { display: none; }
-  .t-card { margin: 8px 0 8px 12px; }
-  .navbar { padding: 0 20px; }
-  .nav-right .nav-tag:first-child { display: none; }
-  .stats-strip { padding: 24px; }
-  .stat { padding: 0 16px; }
-  .stat-val { font-size: 28px; }
-  .footer { grid-template-columns: 1fr; gap: 20px; padding: 32px 24px; }
-  .footer-mid, .footer-right { text-align: left; }
-}
-@media (max-width: 540px) {
-  .hero-heading { font-size: 28px; }
-  .nav-name { display: none; }
-  .hero-chips, .t-tags { display: none; }
-  .t-card { padding: 20px; }
-  .t-title { font-size: 16px; }
-}
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--purple);
+      background: var(--lavender);
+      border: 1px solid var(--border2);
+      border-radius: 20px;
+      padding: 6px 16px;
+      margin-bottom: 24px;
+    }
 
-</style>
+    .hero-eyebrow .dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--gold);
+      box-shadow: 0 0 6px rgba(201, 168, 76, 0.6);
+    }
+
+    .hero-heading {
+      font-size: clamp(32px, 4.5vw, 56px);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -1.5px;
+      color: var(--ink);
+      margin-bottom: 10px;
+    }
+
+    .hero-heading .grad {
+      background: linear-gradient(135deg, var(--purple-deep) 0%, var(--purple2) 50%, var(--gold) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      background-size: 200% auto;
+      animation: shimmer 4s linear infinite;
+    }
+
+    .hero-sub-heading {
+      font-size: clamp(18px, 2vw, 24px);
+      font-weight: 300;
+      color: var(--ink3);
+      margin-bottom: 24px;
+    }
+
+    .hero-desc {
+      font-size: 15px;
+      color: var(--ink3);
+      line-height: 1.8;
+      max-width: 480px;
+      margin-bottom: 36px;
+    }
+
+    .hero-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      padding: 7px 16px;
+      border-radius: 20px;
+      border: 1px solid var(--border2);
+      background: var(--white);
+      color: var(--ink2);
+      box-shadow: var(--shadow-sm);
+      transition: all 0.25s ease;
+    }
+
+    .chip:hover {
+      background: var(--lavender);
+      border-color: var(--lavender3);
+      transform: translateY(-2px);
+    }
+
+    .chip-icon {
+      font-size: 14px;
+    }
+
+    /* PROFILE CARD */
+    .profile-card {
+      background: rgba(255, 255, 255, 0.72);
+      backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      border-radius: 28px;
+      padding: 36px 32px;
+      box-shadow: var(--shadow-lg), 0 0 0 1px rgba(124, 92, 191, 0.08);
+      position: relative;
+      overflow: hidden;
+      animation: float 6s ease-in-out infinite;
+    }
+
+    .profile-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--purple-deep), var(--purple2), var(--gold));
+      border-radius: 28px 28px 0 0;
+    }
+
+    .profile-card::after {
+      content: '';
+      position: absolute;
+      bottom: -60px;
+      right: -60px;
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(180, 160, 230, 0.18) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .card-avatar {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--purple-deep), var(--purple2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      margin-bottom: 20px;
+      box-shadow: 0 8px 24px rgba(74, 53, 128, 0.25);
+      position: relative;
+      z-index: 1;
+    }
+
+    .card-name {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--ink);
+      letter-spacing: -0.5px;
+      margin-bottom: 4px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .card-roll {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--purple);
+      background: var(--lavender);
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .card-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border2), transparent);
+      margin: 20px 0;
+    }
+
+    .card-fields {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .field-label {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--ink4);
+      margin-bottom: 3px;
+    }
+
+    .field-val {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink2);
+    }
+
+    .card-footer {
+      margin-top: 24px;
+      padding: 14px 18px;
+      background: linear-gradient(135deg, var(--lavender), var(--gold-pale));
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .card-footer-icon {
+      font-size: 20px;
+    }
+
+    .cft-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--purple-deep);
+    }
+
+    .cft-sub {
+      font-size: 10px;
+      color: var(--ink3);
+    }
+
+    /* STATS */
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border2), transparent);
+      margin: 0 48px;
+    }
+
+    .stats-strip {
+      background: var(--white);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 32px 48px;
+      display: flex;
+      justify-content: center;
+      margin-bottom: 80px;
+      animation: fadeUp 0.6s 0.3s ease both;
+    }
+
+    .stat {
+      flex: 1;
+      max-width: 200px;
+      text-align: center;
+      padding: 0 28px;
+      border-right: 1px solid var(--border);
+    }
+
+    .stat:last-child {
+      border-right: none;
+    }
+
+    .stat-val {
+      font-size: 36px;
+      font-weight: 900;
+      letter-spacing: -1.5px;
+      background: linear-gradient(135deg, var(--purple-deep), var(--purple2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .stat-lbl {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--ink4);
+    }
+
+    /* SECTION */
+    .section-wrap {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 0 48px 100px;
+    }
+
+    .section-head {
+      text-align: center;
+      margin-bottom: 70px;
+      animation: fadeUp 0.6s 0.2s ease both;
+    }
+
+    .section-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--purple);
+      margin-bottom: 14px;
+    }
+
+    .section-kicker::before,
+    .section-kicker::after {
+      content: '';
+      display: inline-block;
+      width: 24px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--purple2));
+    }
+
+    .section-kicker::after {
+      background: linear-gradient(90deg, var(--purple2), transparent);
+    }
+
+    .section-title {
+      font-size: clamp(26px, 3.5vw, 40px);
+      font-weight: 800;
+      letter-spacing: -1px;
+      color: var(--ink);
+      line-height: 1.15;
+      margin-bottom: 12px;
+    }
+
+    .section-desc {
+      font-size: 15px;
+      color: var(--ink3);
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    /* TIMELINE */
+    .timeline {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: linear-gradient(180deg, transparent 0%, var(--lavender2) 8%, var(--lavender3) 30%, var(--purple2) 60%, var(--lavender2) 92%, transparent 100%);
+      transform: translateX(-50%);
+    }
+
+    .t-item {
+      display: grid;
+      grid-template-columns: 1fr 56px 1fr;
+      align-items: start;
+      min-height: 160px;
+      padding-bottom: 24px;
+      animation: fadeUp 0.6s ease both;
+    }
+
+    .t-item:nth-child(even) .t-card {
+      grid-column: 3;
+      grid-row: 1;
+    }
+
+    .t-item:nth-child(even) .t-center {
+      grid-column: 2;
+      grid-row: 1;
+    }
+
+    .t-item:nth-child(even) .t-spacer {
+      grid-column: 1;
+      grid-row: 1;
+    }
+
+    .t-item:nth-child(odd) .t-card {
+      grid-column: 1;
+      grid-row: 1;
+    }
+
+    .t-item:nth-child(odd) .t-center {
+      grid-column: 2;
+      grid-row: 1;
+    }
+
+    .t-item:nth-child(odd) .t-spacer {
+      grid-column: 3;
+      grid-row: 1;
+    }
+
+    .t-center {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      padding-top: 28px;
+    }
+
+    .t-node {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: var(--white);
+      border: 3px solid var(--lavender2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      position: relative;
+      z-index: 2;
+      box-shadow: var(--shadow-md);
+      flex-shrink: 0;
+    }
+
+    .t-item.prelab .t-node {
+      border-color: var(--gold);
+      background: var(--gold-pale);
+      box-shadow: 0 4px 20px rgba(201, 168, 76, 0.25);
+    }
+
+    .t-item.postlab .t-node {
+      border-color: #2dd4bf;
+      background: #f0fdfa;
+      box-shadow: 0 4px 20px rgba(45, 212, 191, 0.25);
+    }
+
+    .t-card {
+      background: var(--white);
+      border: 1px solid rgba(124, 92, 191, 0.10);
+      border-radius: var(--radius);
+      padding: 28px 28px 24px;
+      box-shadow: var(--shadow-sm);
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      position: relative;
+      overflow: hidden;
+      margin: 16px 0;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease, border-color 0.3s ease;
+    }
+
+    .t-item:nth-child(odd) .t-card::after,
+    .t-item:nth-child(even) .t-card::after {
+      content: '';
+      position: absolute;
+      top: 50px;
+      width: 36px;
+      height: 1px;
+      background: linear-gradient(90deg, var(--lavender2), transparent);
+    }
+
+    .t-item:nth-child(odd) .t-card::after {
+      right: -36px;
+    }
+
+    .t-item:nth-child(even) .t-card::after {
+      left: -36px;
+      background: linear-gradient(270deg, var(--lavender2), transparent);
+    }
+
+    .t-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--card-c1, var(--purple-deep)), var(--card-c2, var(--purple2)));
+      border-radius: var(--radius) var(--radius) 0 0;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .t-card:hover {
+      transform: translateY(-6px) scale(1.01);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--border2);
+    }
+
+    .t-card:hover::before {
+      opacity: 1;
+    }
+
+    .t-card:hover .t-btn {
+      background: var(--purple);
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(124, 92, 191, 0.35);
+    }
+
+    .t-card:hover .t-btn-arrow {
+      transform: translateX(4px);
+    }
+
+    .t-item:nth-child(1) .t-card {
+      --card-c1: #c9a84c;
+      --card-c2: #e8d080;
+    }
+
+    .t-item:nth-child(2) .t-card {
+      --card-c1: #7c5cbf;
+      --card-c2: #9b7dd4;
+    }
+
+    .t-item:nth-child(3) .t-card {
+      --card-c1: #3a7bd5;
+      --card-c2: #7aabf0;
+    }
+
+    .t-item:nth-child(4) .t-card {
+      --card-c1: #d45bbf;
+      --card-c2: #f07ae8;
+    }
+
+    .t-item:nth-child(5) .t-card {
+      --card-c1: #4a9d6f;
+      --card-c2: #72c494;
+    }
+
+    .t-item:nth-child(6) .t-card {
+      --card-c1: #d4753a;
+      --card-c2: #f0a060;
+    }
+
+    .t-item:nth-child(7) .t-card {
+      --card-c1: #5b6abf;
+      --card-c2: #8090e0;
+    }
+
+    .t-item:nth-child(8) .t-card {
+      --card-c1: #7abf5b;
+      --card-c2: #a0e080;
+    }
+
+    .t-item:nth-child(9) .t-card {
+      --card-c1: #bfb05b;
+      --card-c2: #e0d080;
+    }
+
+    /* Post lab: teal theme, same size as others */
+    .t-item.postlab .t-card {
+      background: #f0fdfa;
+      border-color: rgba(45, 212, 191, 0.2);
+      --card-c1: #0d9488;
+      --card-c2: #2dd4bf;
+    }
+
+    .t-item.postlab .t-card:hover {
+      border-color: rgba(45, 212, 191, 0.45);
+    }
+
+    .t-item.postlab .t-card:hover .t-btn {
+      background: #0d9488;
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(13, 148, 136, 0.35);
+    }
+
+    .t-card-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .t-num {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--purple);
+      background: var(--lavender);
+      padding: 4px 12px;
+      border-radius: 20px;
+      border: 1px solid var(--border2);
+      white-space: nowrap;
+    }
+
+    .t-item.prelab .t-num {
+      color: #7a5c10;
+      background: var(--gold-pale);
+      border-color: rgba(201, 168, 76, 0.3);
+    }
+
+    .t-item.postlab .t-num {
+      color: #0d9488;
+      background: #ccfbf1;
+      border-color: rgba(45, 212, 191, 0.35);
+    }
+
+    .t-emoji {
+      font-size: 28px;
+      line-height: 1;
+    }
+
+    .t-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--ink);
+      letter-spacing: -0.4px;
+      line-height: 1.25;
+      margin-bottom: 8px;
+    }
+
+    .t-desc {
+      font-size: 13px;
+      color: var(--ink3);
+      line-height: 1.65;
+      margin-bottom: 20px;
+    }
+
+    .t-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 20px;
+    }
+
+    .t-tag {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      background: var(--paper);
+      border: 1px solid var(--border);
+      color: var(--ink3);
+    }
+
+    .t-item.postlab .t-tag {
+      background: #ccfbf1;
+      border-color: rgba(45, 212, 191, 0.3);
+      color: #0f766e;
+    }
+
+    .t-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      padding: 9px 20px;
+      border-radius: 40px;
+      background: var(--lavender);
+      border: 1.5px solid var(--lavender3);
+      color: var(--purple);
+      text-decoration: none;
+      transition: all 0.25s ease;
+      width: fit-content;
+    }
+
+    .t-item.postlab .t-btn {
+      background: #ccfbf1;
+      border-color: rgba(45, 212, 191, 0.4);
+      color: #0d9488;
+    }
+
+    .t-btn-arrow {
+      transition: transform 0.2s ease;
+      font-size: 14px;
+    }
+
+    .t-spacer {}
+
+    /* FOOTER */
+    .footer {
+      background: var(--ink);
+      color: rgba(255, 255, 255, 0.55);
+      padding: 48px;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 40px;
+      align-items: center;
+    }
+
+    .footer-brand {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, var(--lavender2), var(--gold-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 6px;
+    }
+
+    .footer-sub {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.3);
+    }
+
+    .footer-mid {
+      text-align: center;
+    }
+
+    .footer-mid-text {
+      font-size: 12px;
+      line-height: 2;
+      color: rgba(255, 255, 255, 0.35);
+    }
+
+    .footer-mid-text b {
+      color: rgba(255, 255, 255, 0.65);
+    }
+
+    .footer-right {
+      text-align: right;
+    }
+
+    .footer-made {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.25);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .footer-year {
+      font-size: 28px;
+      font-weight: 800;
+      color: rgba(255, 255, 255, 0.08);
+      letter-spacing: -1px;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 900px) {
+      .hero {
+        grid-template-columns: 1fr;
+        gap: 40px;
+        padding: 48px 24px 40px;
+      }
+
+      .profile-card {
+        animation: none;
+      }
+
+      .section-wrap {
+        padding: 0 24px 80px;
+      }
+
+      .timeline::before {
+        left: 24px;
+        transform: none;
+      }
+
+      .t-item {
+        grid-template-columns: 48px 1fr !important;
+        padding-bottom: 16px;
+      }
+
+      .t-item:nth-child(odd) .t-card,
+      .t-item:nth-child(even) .t-card {
+        grid-column: 2 !important;
+        grid-row: 1 !important;
+      }
+
+      .t-item:nth-child(odd) .t-center,
+      .t-item:nth-child(even) .t-center {
+        grid-column: 1 !important;
+        grid-row: 1 !important;
+      }
+
+      .t-item:nth-child(odd) .t-spacer,
+      .t-item:nth-child(even) .t-spacer {
+        display: none !important;
+      }
+
+      .t-item:nth-child(odd) .t-card::after,
+      .t-item:nth-child(even) .t-card::after {
+        display: none;
+      }
+
+      .t-card {
+        margin: 8px 0 8px 12px;
+      }
+
+      .navbar {
+        padding: 0 20px;
+      }
+
+      .nav-right .nav-tag:first-child {
+        display: none;
+      }
+
+      .stats-strip {
+        padding: 24px;
+      }
+
+      .stat {
+        padding: 0 16px;
+      }
+
+      .stat-val {
+        font-size: 28px;
+      }
+
+      .footer {
+        grid-template-columns: 1fr;
+        gap: 20px;
+        padding: 32px 24px;
+      }
+
+      .footer-mid,
+      .footer-right {
+        text-align: left;
+      }
+    }
+
+    @media (max-width: 540px) {
+      .hero-heading {
+        font-size: 28px;
+      }
+
+      .nav-name {
+        display: none;
+      }
+
+      .hero-chips,
+      .t-tags {
+        display: none;
+      }
+
+      .t-card {
+        padding: 20px;
+      }
+
+      .t-title {
+        font-size: 16px;
+      }
+    }
+  </style>
 </head>
+
 <body>
-<div class="page">
+  <div class="page">
 
-<nav class="navbar">
-  <div class="nav-left">
-    <span class="nav-badge">CM23004</span>
-    <span class="nav-name">Kanchan Gaikwad</span>
-  </div>
-  <div class="nav-right">
-    <span class="nav-tag">CSE · AIML</span>
-    <span class="nav-tag">6th Semester</span>
-    <div class="nav-dot"></div>
-  </div>
-</nav>
+    <nav class="navbar">
+      <div class="nav-left">
+        <span class="nav-badge">CM23004</span>
+        <span class="nav-name">Kanchan Gaikwad</span>
+      </div>
+      <div class="nav-right">
+        <span class="nav-tag">CSE · AIML</span>
+        <span class="nav-tag">6th Semester</span>
+        <div class="nav-dot"></div>
+      </div>
+    </nav>
 
-<section class="hero">
-  <div class="hero-text">
-    <div class="hero-eyebrow"><span class="dot"></span> Machine Learning Tools Lab</div>
-    <h1 class="hero-heading">Building<br/><span class="grad">Intelligence</span><br/>in the Browser.</h1>
-    <p class="hero-sub-heading">Practical Record &amp; Portfolio</p>
-    <p class="hero-desc">A curated collection of hands-on machine learning practicals — from foundational regression models to real-time computer vision — all running natively in the browser using TensorFlow.js.</p>
-    <div class="hero-chips">
-      <span class="chip"><span class="chip-icon">⚡</span> TensorFlow.js</span>
-      <span class="chip"><span class="chip-icon">🧠</span> Neural Networks</span>
-      <span class="chip"><span class="chip-icon">👁️</span> Computer Vision</span>
-      <span class="chip"><span class="chip-icon">💬</span> NLP</span>
-      <span class="chip"><span class="chip-icon">🚀</span> In-Browser ML</span>
-    </div>
-  </div>
-  <div class="profile-card">
-    <div class="card-avatar">👩‍💻</div>
-    <div class="card-name">Kanchan Gaikwad</div>
-    <div class="card-roll">✦ CM23004</div>
-    <div class="card-divider"></div>
-    <div class="card-fields">
-      <div class="card-field"><div class="field-label">Department</div><div class="field-val">CSE (Artificial Intelligence &amp; ML)</div></div>
-      <div class="card-field"><div class="field-label">Subject</div><div class="field-val">Machine Learning Tools Lab</div></div>
-      <div class="card-field"><div class="field-label">Semester</div><div class="field-val">6th Semester · 3rd Year</div></div>
-      <div class="card-field"><div class="field-label">Academic Year</div><div class="field-val">2025 – 2026</div></div>
-    </div>
-    <div class="card-footer">
-      <div class="card-footer-icon">🏫</div>
-      <div><div class="cft-title">ML Tools Lab · Practicals Record</div><div class="cft-sub">TensorFlow.js · In-Browser Machine Learning</div></div>
-    </div>
-  </div>
-</section>
-
-<div class="divider"></div>
-<div class="stats-strip">
-  <div class="stat"><div class="stat-val">10</div><div class="stat-lbl">Practicals</div></div>
-  <div class="stat"><div class="stat-val">TF</div><div class="stat-lbl">Engine</div></div>
-  <div class="stat"><div class="stat-val">100%</div><div class="stat-lbl">In-Browser</div></div>
-  <div class="stat"><div class="stat-val">0</div><div class="stat-lbl">Server Needed</div></div>
-</div>
-
-<section class="section-wrap">
-  <div class="section-head">
-    <div class="section-kicker">Practical Record</div>
-    <h2 class="section-title">Lab Practicals</h2>
-    <p class="section-desc">From environment setup to real-time webcam inference — each practical builds on the last.</p>
-  </div>
-
-  <div class="timeline">
-
-    <!-- PL -->
-    <div class="t-item prelab" style="animation-delay:0.05s;">
-      <a href="HelloTensorFlowJS/index.html" class="t-card">
-        <div class="t-card-head"><span class="t-num">Prelab · PL</span><span class="t-emoji">🧪</span></div>
-        <div class="t-title">Introduction &amp; Environment Setup</div>
-        <div class="t-desc">Getting started with TensorFlow.js — understanding the browser-based ML ecosystem, setting up the development environment, and running the first tensor operations.</div>
-        <div class="t-tags"><span class="t-tag">TensorFlow.js</span><span class="t-tag">Setup</span><span class="t-tag">Fundamentals</span></div>
-        <div class="t-btn">Open Practical <span class="t-btn-arrow">→</span></div>
-      </a>
-      <div class="t-center"><div class="t-node">🧪</div></div>
-      <div class="t-spacer"></div>
-    </div>
-
-    <!-- PR1 -->
-    <div class="t-item" style="animation-delay:0.10s;">
-      <div class="t-spacer"></div>
-      <div class="t-center"><div class="t-node">📈</div></div>
-      <a href="LinearRegressionwithSyntheticData/index.html" class="t-card">
-        <div class="t-card-head"><span class="t-num">Practical · 01</span><span class="t-emoji">📈</span></div>
-        <div class="t-title">Linear Regression</div>
-        <div class="t-desc">Train a neural network to learn the linear relationship between variables. Visualize the loss curve and make predictions with adjustable hyperparameters.</div>
-        <div class="t-tags"><span class="t-tag">Regression</span><span class="t-tag">Gradient Descent</span><span class="t-tag">MSE Loss</span></div>
-        <div class="t-btn">Open Practical <span class="t-btn-arrow">→</span></div>
-      </a>
-    </div>
-
-    <!-- PR2 -->
-    <div class="t-item" style="animation-delay:0.15s;">
-      <a href="Digit%20Recognition%20(MNIST%20Dataset)/index.html" class="t-card">
-        <div class="t-card-head"><span class="t-num">Practical · 02</span><span class="t-emoji">🔢</span></div>
-        <div class="t-title">Digit Recognition</div>
-        <div class="t-desc">Draw any digit on a canvas and watch a neural network trained on the MNIST dataset recognize it in real time — a classic classification problem solved in-browser.</div>
-        <div class="t-tags"><span class="t-tag">CNN</span><span class="t-tag">MNIST</span><span class="t-tag">Classification</span></div>
-        <div class="t-btn">Open Practical <span class="t-btn-arrow">→</span></div>
-      </a>
-      <div class="t-center"><div class="t-node">🔢</div></div>
-      <div class="t-spacer"></div>
-    </div>
-
-    <!-- PR3 -->
-    <div class="t-item" style="animation-delay:0.20s;">
-      <div class="t-spacer"></div>
-      <div class="t-center"><div class="t-node">💬</div></div>
-      <a href="Text%20Sentiment%20Analysis/index.html" class="t-card">
-        <div class="t-card-head"><span class="t-num">Practical · 03</span><span class="t-emoji">💬</span></div>
-        <div class="t-title">Text Sentiment Analysis</div>
-        <div class="t-desc">Train a Dense NN or LSTM-RNN to classify any typed sentence as Positive or Negative. Compare both architectures with live confidence scores.</div>
-        <div class="t-tags"><span class="t-tag">NLP</span><span class="t-tag">LSTM · RNN</span><span class="t-tag">Binary Class.</span></div>
-        <div class="t-btn">Open Practical <span class="t-btn-arrow">→</span></div>
-      </a>
-    </div>
-
-    <!-- PR4 -->
-    <div class="t-item" style="animation-delay:0.25s;">
-      <a href="Image%20Classification%20with%20Pre-trained%20MobileNet/index.html" class="t-card">
-        <div class="t-card-head"><span class="t-num">Practical · 04</span><span class="t-emoji">🖼️</span></div>
-        <div class="t-title">Image Classification</div>
-        <div class="t-desc">Use a pre-trained MobileNet model to classify uploaded images across 1000 ImageNet categories. Top-3 predictions with confidence bars — zero training needed.</div>
-        <div class="t-tags"><span class="t-tag">MobileNet</span><span class="t-tag">Transfer</span><span class="t-tag">ImageNet</span></div>
-        <div class="t-btn">Open Practical <span class="t-btn-arrow">→</span></div>
-      </a>
-      <div class="t-center"><div class="t-node">🖼️</div></div>
-      <div class="t-spacer"></div>
-    </div>
-
-    <!-- PR5 -->
-    <div class="t-item" style="animation-delay:0.30s;">
-      <div class="t-spacer"></div>
-      <div class="t-center"><div class="t-node">📷</div></div>
-      <a href="Webcam-based%20Object%20Detection/index.html" class="t-card">
-        <div class="t-card-head"><span class="t-num">Practical · 05</span><span class="t-emoji">📷</span></div>
-        <div class="t-title">Object Detection</div>
-        <div class="t-desc">Real-time webcam object detection using COCO-SSD — simultaneously detects 90 object classes, draws bounding boxes and labels at 20+ frames per second.</div>
-        <div class="t-tags"><span class="t-tag">COCO-SSD</span><span class="t-tag">Webcam</span><span class="t-tag">Real-time</span></div>
-        <div class="t-btn">Open Practical <span class="t-btn-arrow">→</span></div>
-      </a>
-    </div>
-
-    <!-- PR6 -->
-    <div class="t-item" style="animation-delay:0.35s;">
-      <a href="pose-detection-posenet/index.html" class="t-card">
-        <div class="t-card-head"><span class="t-num">Practical · 06</span><span class="t-emoji">🏃</span></div>
-        <div class="t-title">Pose Detection</div>
-        <div class="t-desc">Detect 17 human body keypoints using the PoseNet model on images and live webcam. A color-coded skeleton overlay is drawn in real time on HTML5 Canvas.</div>
-        <div class="t-tags"><span class="t-tag">PoseNet</span><span class="t-tag">17 Keypoints</span><span class="t-tag">Canvas</span></div>
-        <div class="t-btn">Open Practical <span class="t-btn-arrow">→</span></div>
-      </a>
-      <div class="t-center"><div class="t-node">🏃</div></div>
-      <div class="t-spacer"></div>
-    </div>
-
-    <!-- PR7 -->
-    <div class="t-item" style="animation-delay:0.40s;">
-      <div class="t-spacer"></div>
-      <div class="t-center"><div class="t-node">🚀</div></div>
-      <a href="Deploying%20a%20Model%20in%20Browser/index.html" class="t-card">
-        <div class="t-card-head"><span class="t-num">Practical · 07</span><span class="t-emoji">🚀</span></div>
-        <div class="t-title">Deploy Model in Browser</div>
-        <div class="t-desc">Deploy a trained TensorFlow.js model entirely in the browser — no server, no backend. A Student Pass/Fail Predictor serves as a real-world deployment example.</div>
-        <div class="t-tags"><span class="t-tag">Deployment</span><span class="t-tag">Inference</span><span class="t-tag">Browser ML</span></div>
-        <div class="t-btn">Open Practical <span class="t-btn-arrow">→</span></div>
-      </a>
-    </div>
-
-    <!-- PR8 -->
-    <div class="t-item" style="animation-delay:0.45s;">
-      <a href="Transfer%20Learning%20with%20Images/index.html" class="t-card" style="opacity:0.7;">
-        <div class="t-card-head"><span class="t-num">Practical · 08</span><span class="t-emoji">⚗️</span></div>
-        <div class="t-title">Transfer Learning with Images</div>
-        <div class="t-desc">Fine-tune a pre-trained MobileNet model using your own webcam images. Define custom classes, collect samples, and train a real-time KNN classifier entirely in-browser.</div>
-        <div class="t-tags"><span class="t-tag">Transfer Learning</span><span class="t-tag">KNN</span><span class="t-tag">Webcam</span></div>
-        <div class="t-btn">Open Practical <span class="t-btn-arrow">→</span></div>
-      </a>
-      <div class="t-center"><div class="t-node">⚗️</div></div>
-      <div class="t-spacer"></div>
-    </div>
-
-    <!-- POST LAB -->
-    <div class="t-item postlab" style="animation-delay:0.50s;">
-      <div class="t-spacer"></div>
-      <div class="t-center"><div class="t-node">📸</div></div>
-      <a href="Student%20Attendance%20System/index.html" class="t-card">
-        <div class="t-card-head"><span class="t-num">Post Lab · OEP</span><span class="t-emoji">📸</span></div>
-        <div class="t-title">Student Attendance System with Webcam</div>
-        <div class="t-desc">Open Ended Practical — real-time face detection and recognition via webcam to automatically mark student attendance, running entirely in the browser with no backend required.</div>
-        <div class="t-tags">
-          <span class="t-tag">Face Recognition</span>
-          <span class="t-tag">Webcam</span>
-          <span class="t-tag">Attendance</span>
-          <span class="t-tag">Open Ended</span>
+    <section class="hero">
+      <div class="hero-text">
+        <div class="hero-eyebrow"><span class="dot"></span> Machine Learning Tools Lab</div>
+        <h1 class="hero-heading">Building<br /><span class="grad">Intelligence</span><br />in the Browser.</h1>
+        <p class="hero-sub-heading">Practical Record &amp; Portfolio</p>
+        <p class="hero-desc">A curated collection of hands-on machine learning practicals — from foundational regression
+          models to real-time computer vision — all running natively in the browser using TensorFlow.js.</p>
+        <div class="hero-chips">
+          <span class="chip"><span class="chip-icon">⚡</span> TensorFlow.js</span>
+          <span class="chip"><span class="chip-icon">🧠</span> Neural Networks</span>
+          <span class="chip"><span class="chip-icon">👁️</span> Computer Vision</span>
+          <span class="chip"><span class="chip-icon">💬</span> NLP</span>
+          <span class="chip"><span class="chip-icon">🚀</span> In-Browser ML</span>
         </div>
-        <div class="t-btn">Open Project <span class="t-btn-arrow">→</span></div>
-      </a>
+      </div>
+      <div class="profile-card">
+        <div class="card-avatar">👩‍💻</div>
+        <div class="card-name">Kanchan Gaikwad</div>
+        <div class="card-roll">✦ CM23004</div>
+        <div class="card-divider"></div>
+        <div class="card-fields">
+          <div class="card-field">
+            <div class="field-label">Department</div>
+            <div class="field-val">CSE (Artificial Intelligence &amp; ML)</div>
+          </div>
+          <div class="card-field">
+            <div class="field-label">Subject</div>
+            <div class="field-val">Machine Learning Tools Lab</div>
+          </div>
+          <div class="card-field">
+            <div class="field-label">Semester</div>
+            <div class="field-val">6th Semester · 3rd Year</div>
+          </div>
+          <div class="card-field">
+            <div class="field-label">Academic Year</div>
+            <div class="field-val">2025 – 2026</div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="card-footer-icon">🏫</div>
+          <div>
+            <div class="cft-title">ML Tools Lab · Practicals Record</div>
+            <div class="cft-sub">TensorFlow.js · In-Browser Machine Learning</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+    <div class="stats-strip">
+      <div class="stat">
+        <div class="stat-val">10</div>
+        <div class="stat-lbl">Practicals</div>
+      </div>
+      <div class="stat">
+        <div class="stat-val">TF</div>
+        <div class="stat-lbl">Engine</div>
+      </div>
+      <div class="stat">
+        <div class="stat-val">100%</div>
+        <div class="stat-lbl">In-Browser</div>
+      </div>
+      <div class="stat">
+        <div class="stat-val">0</div>
+        <div class="stat-lbl">Server Needed</div>
+      </div>
     </div>
 
-  </div>
-</section>
+    <section class="section-wrap">
+      <div class="section-head">
+        <div class="section-kicker">Practical Record</div>
+        <h2 class="section-title">Lab Practicals</h2>
+        <p class="section-desc">From environment setup to real-time webcam inference — each practical builds on the
+          last.</p>
+      </div>
 
-<footer class="footer">
-  <div>
-    <div class="footer-brand">ML Tools Lab</div>
-    <div class="footer-sub">Machine Learning · TensorFlow.js</div>
-  </div>
-  <div class="footer-mid">
-    <div class="footer-mid-text"><b>Kanchan Gaikwad</b> · CM23004<br/>CSE (AIML) · 6th Semester<br/>2025 – 2026</div>
-  </div>
-  <div class="footer-right">
-    <div class="footer-made">Academic Portfolio</div>
-    <div class="footer-year">2026</div>
-  </div>
-</footer>
+      <div class="timeline">
 
-</div>
+        <!-- PL -->
+        <div class="t-item prelab" style="animation-delay:0.05s;">
+          <a href="HelloTensorFlowJS/index.html" class="t-card">
+            <div class="t-card-head"><span class="t-num">Prelab · PL</span><span class="t-emoji">🧪</span></div>
+            <div class="t-title">Introduction &amp; Environment Setup</div>
+            <div class="t-desc">Getting started with TensorFlow.js — understanding the browser-based ML ecosystem,
+              setting up the development environment, and running the first tensor operations.</div>
+            <div class="t-tags"><span class="t-tag">TensorFlow.js</span><span class="t-tag">Setup</span><span
+                class="t-tag">Fundamentals</span></div>
+            <div class="t-btn">Open Practical <span class="t-btn-arrow">→</span></div>
+          </a>
+          <div class="t-center">
+            <div class="t-node">🧪</div>
+          </div>
+          <div class="t-spacer"></div>
+        </div>
+
+        <!-- PR1 -->
+        <div class="t-item" style="animation-delay:0.10s;">
+          <div class="t-spacer"></div>
+          <div class="t-center">
+            <div class="t-node">📈</div>
+          </div>
+          <a href="LinearRegressionwithSyntheticData/index.html" class="t-card">
+            <div class="t-card-head"><span class="t-num">Practical · 01</span><span class="t-emoji">📈</span></div>
+            <div class="t-title">Linear Regression</div>
+            <div class="t-desc">Train a neural network to learn the linear relationship between variables. Visualize the
+              loss curve and make predictions with adjustable hyperparameters.</div>
+            <div class="t-tags"><span class="t-tag">Regression</span><span class="t-tag">Gradient Descent</span><span
+                class="t-tag">MSE Loss</span></div>
+            <div class="t-btn">Open Practical <span class="t-btn-arrow">→</span></div>
+          </a>
+        </div>
+
+        <!-- PR2 -->
+        <div class="t-item" style="animation-delay:0.15s;">
+          <a href="Digit%20Recognition%20(MNIST%20Dataset)/index.html" class="t-card">
+            <div class="t-card-head"><span class="t-num">Practical · 02</span><span class="t-emoji">🔢</span></div>
+            <div class="t-title">Digit Recognition</div>
+            <div class="t-desc">Draw any digit on a canvas and watch a neural network trained on the MNIST dataset
+              recognize it in real time — a classic classification problem solved in-browser.</div>
+            <div class="t-tags"><span class="t-tag">CNN</span><span class="t-tag">MNIST</span><span
+                class="t-tag">Classification</span></div>
+            <div class="t-btn">Open Practical <span class="t-btn-arrow">→</span></div>
+          </a>
+          <div class="t-center">
+            <div class="t-node">🔢</div>
+          </div>
+          <div class="t-spacer"></div>
+        </div>
+
+        <!-- PR3 -->
+        <div class="t-item" style="animation-delay:0.20s;">
+          <div class="t-spacer"></div>
+          <div class="t-center">
+            <div class="t-node">💬</div>
+          </div>
+          <a href="Text%20Sentiment%20Analysis/index.html" class="t-card">
+            <div class="t-card-head"><span class="t-num">Practical · 03</span><span class="t-emoji">💬</span></div>
+            <div class="t-title">Text Sentiment Analysis</div>
+            <div class="t-desc">Train a Dense NN or LSTM-RNN to classify any typed sentence as Positive or Negative.
+              Compare both architectures with live confidence scores.</div>
+            <div class="t-tags"><span class="t-tag">NLP</span><span class="t-tag">LSTM · RNN</span><span
+                class="t-tag">Binary Class.</span></div>
+            <div class="t-btn">Open Practical <span class="t-btn-arrow">→</span></div>
+          </a>
+        </div>
+
+        <!-- PR4 -->
+        <div class="t-item" style="animation-delay:0.25s;">
+          <a href="Image%20Classification%20with%20Pre-trained%20MobileNet/index.html" class="t-card">
+            <div class="t-card-head"><span class="t-num">Practical · 04</span><span class="t-emoji">🖼️</span></div>
+            <div class="t-title">Image Classification</div>
+            <div class="t-desc">Use a pre-trained MobileNet model to classify uploaded images across 1000 ImageNet
+              categories. Top-3 predictions with confidence bars — zero training needed.</div>
+            <div class="t-tags"><span class="t-tag">MobileNet</span><span class="t-tag">Transfer</span><span
+                class="t-tag">ImageNet</span></div>
+            <div class="t-btn">Open Practical <span class="t-btn-arrow">→</span></div>
+          </a>
+          <div class="t-center">
+            <div class="t-node">🖼️</div>
+          </div>
+          <div class="t-spacer"></div>
+        </div>
+
+        <!-- PR5 -->
+        <div class="t-item" style="animation-delay:0.30s;">
+          <div class="t-spacer"></div>
+          <div class="t-center">
+            <div class="t-node">📷</div>
+          </div>
+          <a href="Webcam-based%20Object%20Detection/index.html" class="t-card">
+            <div class="t-card-head"><span class="t-num">Practical · 05</span><span class="t-emoji">📷</span></div>
+            <div class="t-title">Object Detection</div>
+            <div class="t-desc">Real-time webcam object detection using COCO-SSD — simultaneously detects 90 object
+              classes, draws bounding boxes and labels at 20+ frames per second.</div>
+            <div class="t-tags"><span class="t-tag">COCO-SSD</span><span class="t-tag">Webcam</span><span
+                class="t-tag">Real-time</span></div>
+            <div class="t-btn">Open Practical <span class="t-btn-arrow">→</span></div>
+          </a>
+        </div>
+
+        <!-- PR6 -->
+        <div class="t-item" style="animation-delay:0.35s;">
+          <a href="pose-detection-posenet/index.html" class="t-card">
+            <div class="t-card-head"><span class="t-num">Practical · 06</span><span class="t-emoji">🏃</span></div>
+            <div class="t-title">Pose Detection</div>
+            <div class="t-desc">Detect 17 human body keypoints using the PoseNet model on images and live webcam. A
+              color-coded skeleton overlay is drawn in real time on HTML5 Canvas.</div>
+            <div class="t-tags"><span class="t-tag">PoseNet</span><span class="t-tag">17 Keypoints</span><span
+                class="t-tag">Canvas</span></div>
+            <div class="t-btn">Open Practical <span class="t-btn-arrow">→</span></div>
+          </a>
+          <div class="t-center">
+            <div class="t-node">🏃</div>
+          </div>
+          <div class="t-spacer"></div>
+        </div>
+
+        <!-- PR7 -->
+        <div class="t-item" style="animation-delay:0.40s;">
+          <div class="t-spacer"></div>
+          <div class="t-center">
+            <div class="t-node">🚀</div>
+          </div>
+          <a href="Deploying%20a%20Model%20in%20Browser/index.html" class="t-card">
+            <div class="t-card-head"><span class="t-num">Practical · 07</span><span class="t-emoji">🚀</span></div>
+            <div class="t-title">Deploy Model in Browser</div>
+            <div class="t-desc">Deploy a trained TensorFlow.js model entirely in the browser — no server, no backend. A
+              Student Pass/Fail Predictor serves as a real-world deployment example.</div>
+            <div class="t-tags"><span class="t-tag">Deployment</span><span class="t-tag">Inference</span><span
+                class="t-tag">Browser ML</span></div>
+            <div class="t-btn">Open Practical <span class="t-btn-arrow">→</span></div>
+          </a>
+        </div>
+
+        <!-- PR8 -->
+        <div class="t-item" style="animation-delay:0.45s;">
+          <a href="Transfer%20Learning%20with%20Images/index.html" class="t-card" style="opacity:0.7;">
+            <div class="t-card-head"><span class="t-num">Practical · 08</span><span class="t-emoji">⚗️</span></div>
+            <div class="t-title">Transfer Learning with Images</div>
+            <div class="t-desc">Fine-tune a pre-trained MobileNet model using your own webcam images. Define custom
+              classes, collect samples, and train a real-time KNN classifier entirely in-browser.</div>
+            <div class="t-tags"><span class="t-tag">Transfer Learning</span><span class="t-tag">KNN</span><span
+                class="t-tag">Webcam</span></div>
+            <div class="t-btn">Open Practical <span class="t-btn-arrow">→</span></div>
+          </a>
+          <div class="t-center">
+            <div class="t-node">⚗️</div>
+          </div>
+          <div class="t-spacer"></div>
+        </div>
+
+        <!-- POST LAB -->
+        <div class="t-item postlab" style="animation-delay:0.50s;">
+          <div class="t-spacer"></div>
+          <div class="t-center">
+            <div class="t-node">📸</div>
+          </div>
+          <a href="Postlab\index.html" class="t-card">
+            <div class="t-card-head"><span class="t-num">Post Lab · OEP</span><span class="t-emoji">📸</span></div>
+            <div class="t-title">Student Attendance System with Webcam</div>
+            <div class="t-desc">Open Ended Practical — real-time face detection and recognition via webcam to
+              automatically mark student attendance, running entirely in the browser with no backend required.</div>
+            <div class="t-tags">
+              <span class="t-tag">Face Recognition</span>
+              <span class="t-tag">Webcam</span>
+              <span class="t-tag">Attendance</span>
+              <span class="t-tag">Open Ended</span>
+            </div>
+            <div class="t-btn">Open Project <span class="t-btn-arrow">→</span></div>
+          </a>
+        </div>
+
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div>
+        <div class="footer-brand">ML Tools Lab</div>
+        <div class="footer-sub">Machine Learning · TensorFlow.js</div>
+      </div>
+      <div class="footer-mid">
+        <div class="footer-mid-text"><b>Kanchan Gaikwad</b> · CM23004<br />CSE (AIML) · 6th Semester<br />2025 – 2026
+        </div>
+      </div>
+      <div class="footer-right">
+        <div class="footer-made">Academic Portfolio</div>
+        <div class="footer-year">2026</div>
+      </div>
+    </footer>
+
+  </div>
 </body>
+
 </html>
